@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virex | Intent-Based Cross-Chain USDC Router</title>
+    <meta name="description" content="Send USDC cross-chain instantly with zero gas fees.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>Virex</span>
+        </div>
+        <div class="nav-actions">
+            <span id="balanceDisplay" class="balance-display hidden">0.00 USDC</span>
+            <button id="connectWalletBtn" class="primary-btn shrink-on-click">Connect Wallet</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="glass-card sidebar-section">
+                <h3 class="sidebar-title">Recent Activity</h3>
+                <div id="recentTransactions" class="tx-list">
+                    <!-- Dynamic transactions -->
+                    <p class="progress-status" style="text-align: center; padding: 1rem;">No recent transfers</p>
+                </div>
+            </div>
+
+            <div class="glass-card sidebar-section">
+                <h3 class="sidebar-title">Resources</h3>
+                <a href="https://faucet.circle.com/" target="_blank" class="resource-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 16.3c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"></path>
+                        <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z"></path>
+                    </svg>
+                    Circle Testnet Faucet
+                </a>
+            </div>
+        </aside>
+
+        <main class="app-container">
+            <div class="glass-card router-box">
+                <h1 class="router-title">Transfer USDC</h1>
+                <p class="router-subtitle">Instant, cross-chain, gasless.</p>
+    
+                <div class="input-group">
+                    <label>Send From</label>
+                    <div class="network-selector">
+                        <div class="network" data-network="ethereum">Ethereum</div>
+                        <div class="network" data-network="arbitrum">Arbitrum</div>
+                        <div class="network" data-network="polygon">Polygon</div>
+                        <div class="network active" data-network="arc">Arc Testnet</div>
+                    </div>
+                </div>
+    
+                <div class="input-group">
+                    <label>Amount (USDC)</label>
+                    <div class="amount-wrapper">
+                        <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01">
+                        <span class="currency-badge">USDC</span>
+                    </div>
+                </div>
+    
+                <div class="exchange-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4V20M12 20L18 14M12 20L6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+    
+                <div class="input-group">
+                    <label>Receive On</label>
+                    <div class="network-selector dest-selector">
+                        <div class="network" data-network="ethereum">Ethereum</div>
+                        <div class="network active" data-network="arbitrum">Arbitrum</div>
+                        <div class="network" data-network="avalanche">Avalanche</div>
+                    </div>
+                </div>
+    
+                <div class="input-group">
+                    <label>Destination Address</label>
+                    <input type="text" id="addressInput" class="address-input" placeholder="0x...">
+                </div>
+    
+                <div class="quote-section" id="quoteSection">
+                    <div class="quote-row">
+                        <span>Platform Fee (2%)</span>
+                        <span id="networkFee">-- USDC</span>
+                    </div>
+                    <div class="quote-row">
+                        <span>You Receive</span>
+                        <span id="receiveAmount" class="highlight-text">-- USDC</span>
+                    </div>
+                    <div class="quote-row">
+                        <span>Est. Time</span>
+                        <span id="estTime">--</span>
+                    </div>
+                </div>
+    
+                <button id="transferBtn" class="primary-btn large-btn shrink-on-click" disabled>Enter Amount</button>
+    
+                <!-- Progress Bar inside modal overlay -->
+                <div id="progressOverlay" class="progress-overlay hidden">
+                    <div class="progress-modal glass-card">
+                        <button id="closeProgressBtn" class="close-btn" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem;">&times;</button>
+                        <h3 id="progressTitle">Initiating Transfer</h3>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <p id="progressStatus" class="progress-status">Awaiting signature...</p>
+                        <div id="txInfo" class="tx-info hidden">
+                            <p>Transaction Hash: <span id="txHashDisplay">--</span></p>
+                            <a id="explorerLink" href="#" target="_blank" class="explorer-link">View on Explorer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+            <!-- Wallet Selection Modal -->
+            <div id="walletModal" class="modal-overlay hidden">
+                <div class="wallet-selection-modal glass-card">
+                    <div class="modal-header">
+                        <h2>Select a Wallet</h2>
+                        <button id="closeWalletModal" class="close-btn">&times;</button>
+                    </div>
+                    <div class="wallet-options">
+                        <button class="wallet-option" data-wallet="metamask">
+                            <div class="wallet-icon metamask-icon"></div>
+                            <span>MetaMask</span>
+                        </button>
+                        <button class="wallet-option" data-wallet="okx">
+                            <div class="wallet-icon okx-icon"></div>
+                            <span>OKX Wallet</span>
+                        </button>
+                        <button class="wallet-option" data-wallet="rabby">
+                            <div class="wallet-icon rabby-icon"></div>
+                            <span>Rabby Wallet</span>
+                        </button>
+                        <button class="wallet-option" data-wallet="injected">
+                            <div class="wallet-icon browser-icon"></div>
+                            <span>Browser Default</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- load ethers for web3 signing mock -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

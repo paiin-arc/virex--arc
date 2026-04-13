@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-virex-bg: #0B0F1A;
+  --color-virex-card: #111827;
+  --color-virex-primary: #4F46E5;
+  --color-virex-secondary: #06B6D4;
+  --color-virex-success: #22C55E;
+  --color-virex-text-primary: #FFFFFF;
+  --color-virex-text-secondary: #9CA3AF;
+  
+  --background-image-accent-gradient: linear-gradient(135deg, #4F46E5, #06B6D4);
+  
+  --radius-virex: 20px;
+}
+
+@layer base {
+  body {
+    @apply bg-virex-bg text-virex-text-primary antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.08];
+  }
+  
+  .virex-card {
+    @apply bg-virex-card border border-white/[0.08] rounded-virex shadow-2xl;
+  }
+  
+  .virex-button {
+    @apply w-full py-4 px-6 rounded-virex font-semibold text-white 
+           bg-accent-gradient shadow-lg shadow-virex-primary/20
+           hover:shadow-virex-primary/40 active:scale-[0.98] transition-all;
+  }
+
+  .virex-input {
+    @apply w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 
+           text-white outline-none focus:border-virex-primary transition-colors;
+  }
+}
