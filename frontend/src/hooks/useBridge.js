@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = import.meta.env.VITE_API_URL;
 const RELAYER_ADDRESS = '0xa010dabe36cabaf7a0ca9b532bed1f31de5e5ef9';
 
 const USDC_ADDRESSES = {
