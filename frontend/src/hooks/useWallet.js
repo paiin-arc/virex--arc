@@ -32,6 +32,25 @@ const CHAIN_CONFIGS = {
     }
 };
 
+const getInjectedProvider = () => {
+    const savedWallet = localStorage.getItem("selectedWallet");
+    let eth = window.ethereum;
+
+    if (savedWallet === 'okx' && window.okxwallet) return window.okxwallet;
+    
+    if (window.ethereum?.providers) {
+        if (savedWallet === 'rabby') {
+            eth = window.ethereum.providers.find(p => p.isRabby) || window.ethereum;
+        } else if (savedWallet === 'metamask') {
+            eth = window.ethereum.providers.find(p => p.isMetaMask && !p.isRabby) || window.ethereum;
+        }
+    } else if (savedWallet === 'rabby' && window.rabby) {
+        eth = window.rabby;
+    }
+
+    return eth;
+};
+
 export const useWallet = () => {
     const [address, setAddress] = useState(null);
     const [balance, setBalance] = useState("0.00");
@@ -52,26 +71,17 @@ export const useWallet = () => {
     }, []);
 
     const connect = async (walletType = 'metamask') => {
-        let eth = window.ethereum;
+        // Persist first so getInjectedProvider can resolve the correct instance generically
+        localStorage.setItem("selectedWallet", walletType);
         
-        // Target specific providers
-        if (walletType === 'okx' && window.okxwallet) eth = window.okxwallet;
-        else if (walletType === 'rabby' && window.rabby) eth = window.rabby;
-        else if (walletType === 'metamask') {
-            // Find metamask among multi-provider setups
-            if (window.ethereum?.providers) {
-                eth = window.ethereum.providers.find(p => p.isMetaMask);
-            } else if (!window.ethereum?.isMetaMask && window.okxwallet) {
-                // If ethereum is hijacked by OKX, and user specifically asked for metamask
-                alert("MetaMask not found or hidden by another wallet extension.");
-                return;
-            }
-        }
+        const eth = getInjectedProvider();
 
         if (!eth) {
             alert(`${walletType.toUpperCase()} wallet not found!`);
             return;
         }
+
+        console.log("Using provider:", eth.isRabby ? "Rabby" : (eth.isMetaMask ? "MetaMask" : walletType));
 
         try {
             const prov = new ethers.providers.Web3Provider(eth);
@@ -82,7 +92,6 @@ export const useWallet = () => {
             setSigner(sig);
             setAddress(accounts[0]);
             setIsConnected(true);
-            localStorage.setItem("selectedWallet", walletType);
             
             await refreshBalance(prov, accounts[0]);
         } catch (err) {
@@ -101,37 +110,92 @@ export const useWallet = () => {
 
     const switchNetwork = async (chainKey) => {
         const config = CHAIN_CONFIGS[chainKey];
-        if (!window.ethereum || !config) return;
+        const targetEth = getInjectedProvider();
+        if (!targetEth || !config) throw new Error("Wallet or chain config not found");
         
         try {
-            await window.ethereum.request({
+            await targetEth.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: config.chainId }],
             });
         } catch (err) {
             if (err.code === 4902) {
-                await window.ethereum.request({
+                await targetEth.request({
                     method: 'wallet_addEthereumChain',
                     params: [config],
                 });
+            } else {
+                throw err;
             }
         }
     };
 
     const ensureNetwork = async (chainKey) => {
-        if (!provider || !chainKey) return;
+        if (!provider || !chainKey) return { provider, signer };
         const config = CHAIN_CONFIGS[chainKey];
         const { chainId } = await provider.getNetwork();
         
         if (chainId !== parseInt(config.chainId, 16)) {
             await switchNetwork(chainKey);
+            
+            // Add fallback handling and verification if network switch fails
+            await new Promise(r => setTimeout(r, 1000));
+            
+            // Recreate ethers provider and signer completely fresh to prevent "underlying network changed"
+            const targetEth = getInjectedProvider();
+            const newProvider = new ethers.providers.Web3Provider(targetEth);
+            const newNetwork = await newProvider.getNetwork();
+            
+            if (newNetwork.chainId !== parseInt(config.chainId, 16)) {
+                throw new Error(`Failed to ensure network ${config.chainName}`);
+            }
+            
+            const newSigner = newProvider.getSigner();
+            
+            // Update React state
+            setProvider(newProvider);
+            setSigner(newSigner);
+            
+            // Safely refresh balance using the updated provider
+            if (address) {
+                refreshBalance(newProvider, address);
+            }
+            
+            // Return fresh instances directly to resolving function closure
+            return { provider: newProvider, signer: newSigner };
         }
+        
+        return { provider, signer };
     };
 
     useEffect(() => {
         const saved = localStorage.getItem("selectedWallet");
         if (saved) connect(saved);
-    }, []);
+        
+        // Listen for underlying network changes dynamically
+        const handleChainChanged = () => {
+            const targetEth = getInjectedProvider();
+            // Re-instantiating the provider is the safest approach in Ethers v5 without throwing NETWORK_ERROR
+            if (targetEth) {
+                 const newProvider = new ethers.providers.Web3Provider(targetEth);
+                 setProvider(newProvider);
+                 setSigner(newProvider.getSigner());
+                 if (address) refreshBalance(newProvider, address);
+            }
+        };
+
+        const currentProvider = getInjectedProvider();
+        if (currentProvider) {
+            currentProvider.on('chainChanged', handleChainChanged);
+        }
+
+        return () => {
+             const cleanupProvider = getInjectedProvider();
+             if (cleanupProvider?.removeListener) {
+                 cleanupProvider.removeListener('chainChanged', handleChainChanged);
+             }
+        };
+    }, [address, refreshBalance]);
 
     return { address, balance, isConnected, provider, signer, connect, disconnect, ensureNetwork, refreshBalance };
 };

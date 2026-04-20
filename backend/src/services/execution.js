@@ -35,7 +35,8 @@ class ExecutionService {
      */
     calculateAmounts(amount) {
         const amountWei = ethers.parseUnits(amount.toString(), 6);
-        const feeWei = (amountWei * 2n) / 100n; // Use BigInt for 2%
+        // Decrease fee taking multiplier to 0.003 (0.3%)
+        const feeWei = (amountWei * 3n) / 1000n; 
         const bridgeAmountWei = amountWei - feeWei;
 
         return {

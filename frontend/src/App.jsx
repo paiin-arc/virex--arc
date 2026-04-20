@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import TransferCard from './components/TransferCard';
 import ActivityList from './components/ActivityList';
 import ProgressOverlay from './components/ProgressOverlay';
+import Sidebar from './components/Sidebar';
 import { useWallet } from './hooks/useWallet';
 import { useBridge } from './hooks/useBridge';
 import { AlertCircle } from 'lucide-react';
@@ -54,18 +55,23 @@ function App() {
 
   return (
     <ErrorBoundary>
-        <div className="min-h-screen pb-20 overflow-x-hidden">
+        <div className="min-h-screen pb-20 overflow-x-hidden flex">
           {/* Background Orbs */}
           <div className="fixed -top-24 -left-24 w-96 h-96 bg-virex-primary/10 rounded-full blur-[120px] pointer-events-none" />
           <div className="fixed -bottom-24 -right-24 w-96 h-96 bg-virex-secondary/10 rounded-full blur-[120px] pointer-events-none" />
 
-          <Header 
-            address={address || ''} 
-            balance={balance || '0.00'} 
-            isConnected={isConnected} 
-            onConnect={connect}
-            onDisconnect={disconnect}
-          />
+          <Sidebar userAddress={address} history={history} />
+
+          <div className="flex-1 ml-60 flex flex-col min-h-screen">
+              <Header 
+                provider={provider}
+                address={address || ''} 
+                balance={balance || '0.00'} 
+                isConnected={isConnected} 
+                onConnect={connect}
+                onDisconnect={disconnect}
+                isBridging={loading}
+              />
 
           <main className="container mx-auto px-4">
             <Hero />
@@ -90,9 +96,10 @@ function App() {
             }} 
           />
 
-          <footer className="mt-20 text-center text-[10px] font-bold text-virex-text-secondary uppercase tracking-[0.2em] opacity-30">
-            Powered by Circle CCTP • Secured by Arc App Kit
-          </footer>
+              <footer className="mt-20 text-center text-[10px] font-bold text-virex-text-secondary uppercase tracking-[0.2em] opacity-30">
+                Powered by Circle CCTP • Secured by Arc App Kit
+              </footer>
+          </div>
         </div>
     </ErrorBoundary>
   );

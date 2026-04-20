@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Wallet, LogOut, ChevronDown, CheckCircle2, ShieldCheck, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -84,17 +84,82 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
     );
 };
 
-const Header = ({ address, balance, isConnected, onConnect, onDisconnect }) => {
+const Header = ({ provider, address, balance, isConnected, onConnect, onDisconnect, isBridging }) => {
   const [showModal, setShowModal] = useState(false);
+  const [blockNumber, setBlockNumber] = useState(null);
+  const [networkName, setNetworkName] = useState('');
+
+  useEffect(() => {
+    if (!provider) return;
+
+    let isSubscribed = true;
+
+    const fetchBlock = async () => {
+      try {
+        const block = await provider.getBlockNumber();
+        const network = await provider.getNetwork();
+        
+        if (isSubscribed) {
+          setBlockNumber(block);
+          
+          let name = network.name;
+          // Chain IDs match standard routing profiles
+          if (network.chainId === 5042002) name = 'Arc'; 
+          else if (network.chainId === 421614) name = 'Arbitrum';
+          else if (network.chainId === 43113) name = 'Avalanche';
+          else if (network.chainId === 11155111) name = 'Ethereum';
+          else name = name.charAt(0).toUpperCase() + name.slice(1);
+          
+          setNetworkName(name);
+        }
+      } catch (err) {
+        console.error("Failed to fetch header block state", err);
+      }
+    };
+
+    fetchBlock();
+
+    // Dynamically query blocks: 4s if bridging active, 8s casual idle
+    const interval = setInterval(fetchBlock, isBridging ? 4000 : 8000);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, [provider, isBridging]);
 
   return (
     <header className="py-6 mb-12">
+      <style>
+        {`
+          @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+          }
+        `}
+      </style>
       <div className="flex items-center justify-between glass-effect rounded-[22px] px-6 py-3 border border-white/[0.08] shadow-xl">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-accent-gradient rounded-xl flex items-center justify-center shadow-lg shadow-virex-primary/20">
-            <span className="text-white font-black text-xl italic">V</span>
-          </div>
-          <span className="text-2xl font-black text-white tracking-tight">VIREX</span>
+        
+        {/* Animated Line & Live Block Info */}
+        <div className="flex items-center gap-4">
+            <div className="w-16 md:w-24 flex items-center">
+                <div 
+                    className={`h-[3px] w-full rounded-full bg-gradient-to-r from-[#00c6ff] via-[#7f00ff] to-[#00c6ff] bg-[length:200%_auto] transition-all duration-700 ease-in-out ${
+                        isBridging 
+                          ? 'opacity-100 shadow-[0_0_12px_rgba(127,0,255,0.5)] scale-100' 
+                          : 'opacity-30 scale-95'
+                    }`}
+                    style={{
+                        animation: `gradient-flow ${isBridging ? '1.5s' : '4s'} linear infinite`
+                    }}
+                />
+            </div>
+            
+            {blockNumber && (
+                <div className={`text-[12px] font-medium tracking-wide transition-opacity duration-500 ${isBridging ? 'text-[#a1b4d6] opacity-100' : 'text-[#8a9bbd] opacity-70'}`}>
+                    {networkName} &bull; #{blockNumber}
+                </div>
+            )}
         </div>
 
         <div className="flex items-center gap-6">
