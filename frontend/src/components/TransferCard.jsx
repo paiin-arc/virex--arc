@@ -1,11 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, ChevronDown, Landmark, ShieldCheck, Zap, Flame, Coins, ArrowLeftRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, Landmark, ShieldCheck, ArrowLeftRight, HelpCircle } from 'lucide-react';
+
+const chainIcons = {
+  arc: "/icons/arc.svg",
+  arbitrum: "/icons/arb.png",
+  avalanche: "/icons/avax.png",
+  ethereum: "/icons/eth.png"
+};
+
+const tokenIcons = {
+  usdc: "/icons/usdc.png"
+};
+
+const SafeIcon = ({ src, alt, className, fallbackIcon: FallbackIcon }) => {
+    const [hasError, setHasError] = useState(false);
+
+    if (hasError || !src) {
+        return <FallbackIcon className={className} />;
+    }
+
+    return (
+        <img 
+            src={src} 
+            alt={alt} 
+            className={className}
+            onError={() => setHasError(true)}
+        />
+    );
+};
 
 const SUPPORTED_CHAINS = [
-    { id: 'arc', name: 'Arc Testnet', icon: Landmark, color: 'text-virex-primary', bg: 'bg-virex-primary/20' },
-    { id: 'arbitrum', name: 'Arbitrum Sepolia', icon: Zap, color: 'text-blue-400', bg: 'bg-blue-400/20' },
-    { id: 'avalanche', name: 'Avalanche Fuji', icon: Flame, color: 'text-red-400', bg: 'bg-red-400/20' },
-    { id: 'ethereum', name: 'Ethereum Sepolia', icon: Coins, color: 'text-indigo-400', bg: 'bg-indigo-400/20' }
+    { id: 'arc', name: 'Arc Testnet', color: 'text-virex-primary', bg: 'bg-virex-primary/20' },
+    { id: 'arbitrum', name: 'Arbitrum Sepolia', color: 'text-blue-400', bg: 'bg-blue-400/20' },
+    { id: 'avalanche', name: 'Avalanche Fuji', color: 'text-red-400', bg: 'bg-red-400/20' },
+    { id: 'ethereum', name: 'Ethereum Sepolia', color: 'text-indigo-400', bg: 'bg-indigo-400/20' }
 ];
 
 const ChainSelectorMenu = ({ onSelect, currentId, onClose }) => (
@@ -19,8 +47,8 @@ const ChainSelectorMenu = ({ onSelect, currentId, onClose }) => (
                         currentId === chain.id ? 'bg-white/10' : 'hover:bg-white/5'
                     }`}
                 >
-                    <div className={`w-8 h-8 rounded-lg ${chain.bg} flex items-center justify-center ${chain.color}`}>
-                        <chain.icon size={18} />
+                    <div className={`w-8 h-8 rounded-lg ${chain.bg} flex items-center justify-center ${chain.color} overflow-hidden p-1.5`}>
+                        <SafeIcon src={chainIcons[chain.id]} alt={chain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
                     </div>
                     <span className="text-sm font-bold">{chain.name}</span>
                 </button>
@@ -70,8 +98,8 @@ const TransferCard = ({
           onClick={() => setSelOpen(selOpen === 'source' ? null : 'source')}
           className="flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
         >
-          <div className={`w-8 h-8 rounded-lg ${sourceChain.bg} flex items-center justify-center ${sourceChain.color}`}>
-            <sourceChain.icon size={18} />
+          <div className={`w-8 h-8 rounded-lg ${sourceChain.bg} flex items-center justify-center ${sourceChain.color} overflow-hidden p-1.5`}>
+            <SafeIcon src={chainIcons[sourceChain.id]} alt={sourceChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-tighter">Source</span>
@@ -103,8 +131,8 @@ const TransferCard = ({
           onClick={() => setSelOpen(selOpen === 'dest' ? null : 'dest')}
           className="flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
         >
-          <div className={`w-8 h-8 rounded-lg ${destChain.bg} flex items-center justify-center ${destChain.color}`}>
-            <destChain.icon size={18} />
+          <div className={`w-8 h-8 rounded-lg ${destChain.bg} flex items-center justify-center ${destChain.color} overflow-hidden p-1.5`}>
+            <SafeIcon src={chainIcons[destChain.id]} alt={destChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-tighter">Destination</span>
@@ -137,7 +165,7 @@ const TransferCard = ({
             className="w-full bg-transparent text-6xl md:text-7xl font-black text-center text-white outline-none placeholder:text-white/5"
           />
           <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 cursor-pointer transition-colors">
-            <div className="w-5 h-5 rounded-full bg-[#2775CA] flex items-center justify-center text-[10px] font-bold">$</div>
+            <SafeIcon src={tokenIcons.usdc} alt="USDC" className="w-5 h-5 object-contain rounded-full" fallbackIcon={HelpCircle} />
             <span className="text-sm font-bold">USDC</span>
             <ChevronDown size={14} className="text-virex-text-secondary" />
           </div>
