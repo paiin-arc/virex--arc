@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: virex-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # You can add other backend environment variables from your .env here
+      # For example:
+      # - key: CIRCLE_API_KEY
+      #   value: YOUR_SECRET_API_KEY

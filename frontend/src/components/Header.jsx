@@ -3,11 +3,31 @@ import { Wallet, LogOut, ChevronDown, CheckCircle2, ShieldCheck, X } from 'lucid
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WALLETS = [
-    { id: 'metamask', name: 'MetaMask', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Awareness_Icons_RGB_orange.svg' },
-    { id: 'okx', name: 'OKX Wallet', icon: 'https://static.okx.com/cdn/assets/imgs/221/9E9A9C9B4B8B4B8B.png' },
-    { id: 'rabby', name: 'Rabby Wallet', icon: 'https://rabby.io/assets/images/logo.png' },
-    { id: 'coinbase', name: 'Coinbase', icon: 'https://images.ctfassets.net/q5ulk4bp65r7/3rFFRi1Hoo7CjJ9S7S8S8O/427848c0846067ae96773531b262a4d0/coinbase-white.png' }
+    { id: 'metamask', name: 'MetaMask', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg' },
+    { id: 'okx', name: 'OKX Wallet', icon: 'https://www.okx.com/cdn/assets/imgs/221/9E9A9C9B4B8B4B8B.png' },
+    { id: 'rabby', name: 'Rabby Wallet', icon: 'https://rabby.io/assets/images/logo.svg' },
+    { id: 'coinbase', name: 'Coinbase', icon: 'https://avatars.githubusercontent.com/u/18060234?s=200&v=4' }
 ];
+
+const WalletIcon = ({ src, alt }) => {
+    const [hasError, setHasError] = useState(false);
+
+    if (hasError) {
+        return <Wallet className="w-6 h-6 text-virex-text-secondary" />;
+    }
+
+    return (
+        <img 
+            src={src} 
+            alt={alt} 
+            className="w-full h-full object-contain"
+            onError={(e) => {
+                console.warn(`[WalletModal] Failed to load icon for ${alt} from ${src}. Falling back to default icon.`);
+                setHasError(true);
+            }}
+        />
+    );
+};
 
 const WalletModal = ({ isOpen, onClose, onSelect }) => {
     if (!isOpen) return null;
@@ -55,7 +75,7 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-white/5 p-2 flex items-center justify-center group-hover:bg-virex-primary/10 transition-colors">
-                                        <img src={wallet.icon} alt={wallet.name} className="w-full h-full object-contain" />
+                                        <WalletIcon src={wallet.icon} alt={wallet.name} />
                                     </div>
                                     <div>
                                         <span className="block text-white font-bold">{wallet.name}</span>

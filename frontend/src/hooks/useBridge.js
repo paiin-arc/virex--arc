@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { ethers } from 'ethers';
 
-const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 const RELAYER_ADDRESS = '0xa010dabe36cabaf7a0ca9b532bed1f31de5e5ef9';
 
 const USDC_ADDRESSES = {
@@ -58,6 +58,9 @@ export const useBridge = (signer, address, { ensureNetwork, provider } = {}) => 
     const fetchQuote = useCallback(async (amount, source, dest) => {
         try {
             const res = await fetch(`${API_BASE}/quote?amount=${amount}&source=${source}&dest=${dest}`);
+            if (!res.ok) {
+                throw new Error(`Quote fetch failed with status ${res.status}`);
+            }
             const data = await res.json();
             setQuote(data);
         } catch (err) {
@@ -212,11 +215,12 @@ export const useBridge = (signer, address, { ensureNetwork, provider } = {}) => 
             if (!res.ok) {
                 // Improved Error Handling: Log full backend response
                 let errorDetails = "Failed to create bridge intent";
+                const errorText = await res.text();
                 try {
-                    const errData = await res.json();
+                    const errData = JSON.parse(errorText);
                     errorDetails = errData.error || JSON.stringify(errData);
                 } catch (e) {
-                    errorDetails = await res.text();
+                    errorDetails = errorText;
                 }
                 
                 console.error("Backend Intent Creation Error Response:", errorDetails, "Status:", res.status);
