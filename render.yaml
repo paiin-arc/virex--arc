@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: virex-backend
+    name: virex-backend-paiin-arc
     env: node
     plan: free
     buildCommand: cd backend && npm install
