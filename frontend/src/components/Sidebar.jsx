@@ -82,6 +82,35 @@ const Sidebar = ({ userAddress, history }) => {
                     </div>
                 )}
             </div>
+
+            {/* Footer Section */}
+            <div className="mt-auto pt-6 border-t border-[#1a2235]">
+                <a 
+                    href="https://x.com/paiin" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#1a2235] transition-all group"
+                >
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-400 transition-colors shrink-0">
+                        <img 
+                            src="/paiin-pfp.jpg" 
+                            alt="paiin" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                // Fallback to unavatar if the local file isn't found
+                                if (!e.target.src.includes('unavatar')) {
+                                    e.target.src = "https://unavatar.io/twitter/paiin";
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Created by</span>
+                        <span className="text-sm font-bold text-gray-200 group-hover:text-blue-400 transition-colors">paiin</span>
+                        <span className="text-[9px] text-blue-400/80 mt-0.5 font-medium">Follow my X handle</span>
+                    </div>
+                </a>
+            </div>
         </aside>
     );
 };
