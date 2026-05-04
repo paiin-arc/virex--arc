@@ -8,7 +8,7 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
     return (
         <aside className={`fixed left-0 top-0 h-screen w-60 bg-[#0b0f1a] border-r border-[#1a2235] flex flex-col pt-8 pb-6 px-4 z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             {/* Close Button Mobile */}
-            <button 
+            <button
                 onClick={onClose}
                 className="lg:hidden absolute top-4 right-4 p-2 text-gray-400 hover:text-white"
             >
@@ -114,8 +114,8 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Created by</span>
-                        <span className="text-sm font-bold text-gray-200 group-hover:text-blue-400 transition-colors">paiin</span>
-                        <span className="text-[9px] text-blue-400/80 mt-0.5 font-medium">Follow my X handle</span>
+                        <span className="text-sm font-bold text-gray-200 group-hover:text-blue-400 transition-colors">paiin_ip</span>
+                        <span className="text-[9px] text-blue-400/80 mt-0.5 font-medium">Follow</span>
                     </div>
                 </a>
             </div>
