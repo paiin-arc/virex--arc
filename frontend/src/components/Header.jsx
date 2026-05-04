@@ -39,6 +39,32 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
         return false;
     };
 
+    const handleWalletSelect = (walletId) => {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile && !isInstalled(walletId)) {
+            const dappUrl = encodeURIComponent(window.location.href.replace(/^https?:\/\//, ''));
+            const fullUrl = encodeURIComponent(window.location.href);
+
+            if (walletId === 'metamask') {
+                window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
+                return;
+            } else if (walletId === 'okx') {
+                window.location.href = `https://www.okx.com/web3/dapp/details?dappUrl=${fullUrl}`;
+                return;
+            } else if (walletId === 'coinbase') {
+                window.location.href = `https://go.cb-w.com/dapp?cb_url=${fullUrl}`;
+                return;
+            } else {
+                alert(`Please open this site inside your ${walletId} app browser.`);
+                return;
+            }
+        }
+
+        onSelect(walletId);
+        onClose();
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
@@ -70,7 +96,7 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
                         {WALLETS.map(wallet => (
                             <button
                                 key={wallet.id}
-                                onClick={() => { onSelect(wallet.id); onClose(); }}
+                                onClick={() => handleWalletSelect(wallet.id)}
                                 className="group flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-virex-primary/40 transition-all text-left"
                             >
                                 <div className="flex items-center gap-4">
@@ -94,8 +120,8 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
                     <div className="mt-8 p-4 bg-virex-primary/5 border border-virex-primary/10 rounded-2xl flex items-start gap-3">
                         <ShieldCheck className="text-virex-primary shrink-0" size={18} />
                         <p className="text-[11px] text-virex-text-secondary leading-relaxed">
-                            Connecting your wallet is secure and does not give us access to your private keys or funds. 
-                            You will always be asked to sign each transaction personally.
+                            Open this site inside your wallet app or use the options above to connect. 
+                            Connecting your wallet is secure and does not give us access to your private keys or funds.
                         </p>
                     </div>
                 </div>

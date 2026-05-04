@@ -70,14 +70,14 @@ export const useWallet = () => {
         }
     }, []);
 
-    const connect = async (walletType = 'metamask') => {
+    const connect = async (walletType = 'metamask', isAutoConnect = false) => {
         // Persist first so getInjectedProvider can resolve the correct instance generically
         localStorage.setItem("selectedWallet", walletType);
         
         const eth = getInjectedProvider();
 
         if (!eth) {
-            alert(`${walletType.toUpperCase()} wallet not found!`);
+            if (!isAutoConnect) alert(`${walletType.toUpperCase()} wallet not found!`);
             return;
         }
 
@@ -170,7 +170,7 @@ export const useWallet = () => {
 
     useEffect(() => {
         const saved = localStorage.getItem("selectedWallet");
-        if (saved) connect(saved);
+        if (saved) connect(saved, true);
         
         // Listen for underlying network changes dynamically
         const handleChainChanged = () => {
