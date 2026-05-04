@@ -1,19 +1,27 @@
 import React from 'react';
-import { ExternalLink, Layers, Navigation, ShieldCheck } from 'lucide-react';
+import { ExternalLink, Layers, Navigation, ShieldCheck, X } from 'lucide-react';
 
-const Sidebar = ({ userAddress, history }) => {
+const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
     // Get the most recent successfully bridged/burn transaction hash
     const latestBurnTx = history?.find(h => h.sourceTxHash)?.sourceTxHash;
 
     return (
-        <aside className="fixed left-0 top-0 h-screen w-60 bg-[#0b0f1a] border-r border-[#1a2235] flex flex-col pt-8 pb-6 px-4 z-50">
+        <aside className={`fixed left-0 top-0 h-screen w-60 bg-[#0b0f1a] border-r border-[#1a2235] flex flex-col pt-8 pb-6 px-4 z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            {/* Close Button Mobile */}
+            <button 
+                onClick={onClose}
+                className="lg:hidden absolute top-4 right-4 p-2 text-gray-400 hover:text-white"
+            >
+                <X size={20} />
+            </button>
+
             {/* Logo Section */}
-            <div className="flex flex-col items-center mb-10">
+            <div className="flex flex-col items-center mb-10 mt-2 lg:mt-0">
                 <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                    <img 
-                        src="/virex-app-logo.png" 
-                        alt="Virex Logo" 
+                    <img
+                        src="/virex-app-logo.png"
+                        alt="Virex Logo"
                         className="w-14 h-14 object-contain relative z-10"
                     />
                 </div>
@@ -25,9 +33,9 @@ const Sidebar = ({ userAddress, history }) => {
                 <div>
                     <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Tools</h3>
                     <nav className="space-y-1">
-                        <a 
-                            href="https://testnet.arcscan.app/" 
-                            target="_blank" 
+                        <a
+                            href="https://testnet.arcscan.app/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
                         >
@@ -35,9 +43,9 @@ const Sidebar = ({ userAddress, history }) => {
                             <span className="text-sm font-medium">Arc Explorer</span>
                             <ExternalLink size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
-                        <a 
-                            href="https://faucet.circle.com/" 
-                            target="_blank" 
+                        <a
+                            href="https://faucet.circle.com/"
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
                         >
@@ -54,9 +62,9 @@ const Sidebar = ({ userAddress, history }) => {
                         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Your Activity</h3>
                         <nav className="space-y-1">
                             {userAddress && (
-                                <a 
-                                    href={`https://testnet.arcscan.app/address/${userAddress}`} 
-                                    target="_blank" 
+                                <a
+                                    href={`https://testnet.arcscan.app/address/${userAddress}`}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
                                 >
@@ -65,11 +73,11 @@ const Sidebar = ({ userAddress, history }) => {
                                     <ExternalLink size={14} className="ml-auto flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </a>
                             )}
-                            
+
                             {latestBurnTx && (
-                                <a 
-                                    href={`https://testnet.arcscan.app/tx/${latestBurnTx}`} 
-                                    target="_blank" 
+                                <a
+                                    href={`https://testnet.arcscan.app/tx/${latestBurnTx}`}
+                                    target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
                                 >
@@ -85,22 +93,29 @@ const Sidebar = ({ userAddress, history }) => {
 
             {/* Footer Section */}
             <div className="mt-auto pt-6 border-t border-[#1a2235]">
-                <a 
-                    href="https://x.com/paiin_ip" 
-                    target="_blank" 
+                <a
+                    href="https://x.com/paiin_ip"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#1a2235] transition-all group"
                 >
                     <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-400 transition-colors shrink-0">
-                        <img 
-                            src="https://unavatar.io/twitter/paiin_ip" 
-                            alt="paiin_ip" 
+                        <img
+                            src="/paiin-pfp.jpg"
+                            alt="paiin_ip"
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                                // Fallback to unavatar if the local file isn't found
+                                if (!e.target.src.includes('unavatar')) {
+                                    e.target.src = "https://unavatar.io/twitter/paiin_ip";
+                                }
+                            }}
                         />
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Created by</span>
-                        <span className="text-sm font-bold text-gray-200 group-hover:text-blue-400 transition-colors">paiin_ip</span>
+                        <span className="text-sm font-bold text-gray-200 group-hover:text-blue-400 transition-colors">paiin</span>
+                        <span className="text-[9px] text-blue-400/80 mt-0.5 font-medium">Follow my X handle</span>
                     </div>
                 </a>
             </div>

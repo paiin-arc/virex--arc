@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wallet, LogOut, ChevronDown, CheckCircle2, ShieldCheck, X } from 'lucide-react';
+import { Wallet, LogOut, ChevronDown, CheckCircle2, ShieldCheck, X, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WALLETS = [
@@ -104,7 +104,7 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
     );
 };
 
-const Header = ({ provider, address, balance, isConnected, onConnect, onDisconnect, isBridging }) => {
+const Header = ({ provider, address, balance, isConnected, onConnect, onDisconnect, isBridging, onMenuClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [blockNumber, setBlockNumber] = useState(null);
   const [networkName, setNetworkName] = useState('');
@@ -158,11 +158,18 @@ const Header = ({ provider, address, balance, isConnected, onConnect, onDisconne
           }
         `}
       </style>
-      <div className="flex items-center justify-between glass-effect rounded-[22px] px-6 py-3 border border-white/[0.08] shadow-xl">
+      <div className="flex items-center justify-between glass-effect rounded-[22px] px-4 md:px-6 py-3 border border-white/[0.08] shadow-xl gap-2">
         
         {/* Animated Line & Live Block Info */}
-        <div className="flex items-center gap-4">
-            <div className="w-16 md:w-24 flex items-center">
+        <div className="flex items-center gap-3 md:gap-4">
+            <button 
+                onClick={onMenuClick} 
+                className="lg:hidden p-1.5 text-virex-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            >
+                <Menu size={20} />
+            </button>
+            
+            <div className="w-12 md:w-24 hidden sm:flex items-center">
                 <div 
                     className={`h-[3px] w-full rounded-full bg-gradient-to-r from-[#00c6ff] via-[#7f00ff] to-[#00c6ff] bg-[length:200%_auto] transition-all duration-700 ease-in-out ${
                         isBridging 
@@ -176,13 +183,13 @@ const Header = ({ provider, address, balance, isConnected, onConnect, onDisconne
             </div>
             
             {blockNumber && (
-                <div className={`text-[12px] font-medium tracking-wide transition-opacity duration-500 ${isBridging ? 'text-[#a1b4d6] opacity-100' : 'text-[#8a9bbd] opacity-70'}`}>
+                <div className={`hidden sm:block text-[12px] font-medium tracking-wide transition-opacity duration-500 ${isBridging ? 'text-[#a1b4d6] opacity-100' : 'text-[#8a9bbd] opacity-70'}`}>
                     {networkName} &bull; #{blockNumber}
                 </div>
             )}
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 md:gap-6">
           {isConnected && (
             <div className="hidden md:flex items-center gap-4 px-4 py-2 bg-white/[0.03] rounded-full border border-white/5">
               <div className="flex flex-col items-end">
@@ -203,21 +210,21 @@ const Header = ({ provider, address, balance, isConnected, onConnect, onDisconne
           {!isConnected ? (
             <button 
               onClick={() => setShowModal(true)}
-              className="px-6 py-2.5 bg-accent-gradient rounded-full font-bold text-sm text-white shadow-lg shadow-virex-primary/20 hover:shadow-virex-primary/40 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+              className="px-4 py-2 md:px-6 md:py-2.5 bg-accent-gradient rounded-full font-bold text-xs md:text-sm text-white shadow-lg shadow-virex-primary/20 hover:shadow-virex-primary/40 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
             >
-              <Wallet size={16} />
-              Connect Wallet
+              <Wallet size={16} className="hidden sm:block" />
+              Connect<span className="hidden sm:inline"> Wallet</span>
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <div className="px-4 py-2.5 bg-white/5 border border-white/10 rounded-full flex items-center gap-2 group cursor-pointer hover:border-virex-primary transition-all">
+              <div className="px-3 py-2 md:px-4 md:py-2.5 bg-white/5 border border-white/10 rounded-full flex items-center gap-2 group cursor-pointer hover:border-virex-primary transition-all">
                 <div className="w-5 h-5 rounded-full bg-virex-primary/20 flex items-center justify-center">
                   <CheckCircle2 size={12} className="text-virex-primary" />
                 </div>
-                <span className="text-xs font-bold text-white">
-                  {address.slice(0, 6)}...{address.slice(-4)}
+                <span className="text-[11px] md:text-xs font-bold text-white">
+                  {address.slice(0, 4)}...{address.slice(-4)}
                 </span>
-                <ChevronDown size={14} className="text-virex-text-secondary group-hover:text-virex-primary transition-colors" />
+                <ChevronDown size={14} className="text-virex-text-secondary group-hover:text-virex-primary transition-colors hidden sm:block" />
               </div>
               
               <button 

@@ -91,12 +91,12 @@ const TransferCard = ({
   }, [amount, sourceChainId, destChainId]);
 
   return (
-    <div className="w-full max-w-[500px] mx-auto virex-card p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="w-full max-w-[500px] mx-auto virex-card p-4 md:p-6 space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Chain Selector */}
-      <div className="flex items-center justify-between gap-4 p-2 bg-black/20 rounded-[22px] border border-white/5 relative">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 p-2 bg-black/20 rounded-[22px] border border-white/5 relative">
         <div 
           onClick={() => setSelOpen(selOpen === 'source' ? null : 'source')}
-          className="flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
+          className="w-full md:flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
         >
           <div className={`w-8 h-8 rounded-lg ${sourceChain.bg} flex items-center justify-center ${sourceChain.color} overflow-hidden p-1.5`}>
             <SafeIcon src={chainIcons[sourceChain.id]} alt={sourceChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
@@ -122,14 +122,14 @@ const TransferCard = ({
 
         <button 
             onClick={handleSwap}
-            className="w-10 h-10 rounded-full bg-virex-primary flex items-center justify-center shadow-lg shadow-virex-primary/40 hover:scale-110 active:rotate-180 transition-all z-10"
+            className="w-10 h-10 rounded-full bg-virex-primary flex items-center justify-center shadow-lg shadow-virex-primary/40 hover:scale-110 active:rotate-180 transition-all z-10 rotate-90 md:rotate-0 -my-3 md:my-0 border-4 border-[#111827] md:border-none"
         >
           <ArrowLeftRight size={18} className="text-white" />
         </button>
 
         <div 
           onClick={() => setSelOpen(selOpen === 'dest' ? null : 'dest')}
-          className="flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
+          className="w-full md:flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
         >
           <div className={`w-8 h-8 rounded-lg ${destChain.bg} flex items-center justify-center ${destChain.color} overflow-hidden p-1.5`}>
             <SafeIcon src={chainIcons[destChain.id]} alt={destChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
@@ -162,7 +162,7 @@ const TransferCard = ({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
-            className="w-full bg-transparent text-6xl md:text-7xl font-black text-center text-white outline-none placeholder:text-white/5"
+            className="w-full bg-transparent text-5xl md:text-7xl font-black text-center text-white outline-none placeholder:text-white/5"
           />
           <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 cursor-pointer transition-colors">
             <SafeIcon src={tokenIcons.usdc} alt="USDC" className="w-5 h-5 object-contain rounded-full" fallbackIcon={HelpCircle} />

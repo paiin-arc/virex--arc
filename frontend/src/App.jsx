@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import TransferCard from './components/TransferCard';
@@ -31,6 +31,7 @@ class ErrorBoundary extends React.Component {
 }
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { 
     address, 
     balance, 
@@ -60,9 +61,22 @@ function App() {
           <div className="fixed -top-24 -left-24 w-96 h-96 bg-virex-primary/10 rounded-full blur-[120px] pointer-events-none" />
           <div className="fixed -bottom-24 -right-24 w-96 h-96 bg-virex-secondary/10 rounded-full blur-[120px] pointer-events-none" />
 
-          <Sidebar userAddress={address} history={history} />
+          {/* Mobile Overlay */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          )}
 
-          <div className="flex-1 ml-60 flex flex-col min-h-screen">
+          <Sidebar 
+            userAddress={address} 
+            history={history} 
+            isOpen={isSidebarOpen} 
+            onClose={() => setIsSidebarOpen(false)} 
+          />
+
+          <div className="flex-1 lg:ml-60 flex flex-col min-h-screen w-full transition-all duration-300">
               <Header 
                 provider={provider}
                 address={address || ''} 
@@ -71,6 +85,7 @@ function App() {
                 onConnect={connect}
                 onDisconnect={disconnect}
                 isBridging={loading}
+                onMenuClick={() => setIsSidebarOpen(true)}
               />
 
           <main className="container mx-auto px-4">
