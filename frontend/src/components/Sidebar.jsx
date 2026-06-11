@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ExternalLink, Layers, Navigation, ShieldCheck, X, ArrowRightLeft } from 'lucide-react';
-import { AppKit } from "@circle-fin/app-kit";
-import { createViemAdapterFromProvider } from "@circle-fin/adapter-viem-v2";
+import { ethers } from 'ethers';
 
 const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
     // Get the most recent successfully bridged/burn transaction hash
@@ -20,29 +19,43 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                 throw new Error("No browser wallet (e.g., MetaMask) found.");
             }
 
-            // Create adapter from the user's browser wallet
-            const adapter = await createViemAdapterFromProvider({
-                provider: window.ethereum,
-            });
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
 
-            // Initialize the App Kit
-            const kit = new AppKit();
+            // ApexisSwap V1 Router on Arc Testnet
+            const ROUTER_ADDRESS = "0x437b1aBf6e5a69548849b15EC35f83A73Fa1E28F";
+            const EURC_ADDRESS = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
 
-            const result = await kit.swap({
-              from: { 
-                  adapter: adapter, 
-                  chain: "Arc_Testnet" 
-              },
-              tokenIn: "USDC",
-              tokenOut: "EURC",
-              amountIn: swapAmount,
-              config: { 
-                  kitKey: import.meta.env.VITE_KIT_KEY,
-                  slippageBps: 300 // 3% slippage
-              },
-            });
+            const routerAbi = [
+                "function WETH() external view returns (address)",
+                "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)"
+            ];
             
-            console.log(`Swapped ${swapAmount} USDC for EURC`, result);
+            const router = new ethers.Contract(ROUTER_ADDRESS, routerAbi, signer);
+            
+            // Get the wrapped native token address dynamically from the router
+            const wethAddress = await router.WETH();
+            const path = [wethAddress, EURC_ADDRESS];
+
+            // Native USDC gas token uses 18 decimals on Arc Testnet
+            const amountInWei = ethers.utils.parseUnits(swapAmount.toString(), 18);
+            const amountOutMin = 0; // Note: In production, calculate proper slippage
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
+            const userAddress = await signer.getAddress();
+
+            console.log("Submitting Swap Transaction...");
+            const tx = await router.swapExactETHForTokens(
+                amountOutMin,
+                path,
+                userAddress,
+                deadline,
+                { value: amountInWei }
+            );
+            
+            console.log("Transaction Hash:", tx.hash);
+            await tx.wait(); // Wait for confirmation
+            
+            console.log(`Swapped ${swapAmount} USDC for EURC`);
             setSwapAmount('');
             alert('Swap successful!');
         } catch (error) {
