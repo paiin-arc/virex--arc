@@ -7,6 +7,7 @@ import ProgressOverlay from './components/ProgressOverlay';
 import Sidebar from './components/Sidebar';
 import { useWallet } from './hooks/useWallet';
 import { useBridge } from './hooks/useBridge';
+import { useActivity } from './hooks/useActivity';
 import { AlertCircle } from 'lucide-react';
 
 class ErrorBoundary extends React.Component {
@@ -45,15 +46,16 @@ function App() {
     ensureNetwork
   } = useWallet();
 
+  const { history, addActivity } = useActivity();
+
   const { 
     quote, 
     fetchQuote, 
     initiateBridge, 
     status, 
     setStatus,
-    loading, 
-    history 
-  } = useBridge(signer, address, { ensureNetwork, provider });
+    loading 
+  } = useBridge(signer, address, { ensureNetwork, provider, addActivity });
 
   return (
     <ErrorBoundary>
@@ -73,6 +75,7 @@ function App() {
           <Sidebar 
             userAddress={address} 
             history={history} 
+            addActivity={addActivity}
             isOpen={isSidebarOpen} 
             onClose={() => setIsSidebarOpen(false)} 
           />

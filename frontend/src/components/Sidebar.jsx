@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Layers, Navigation, ShieldCheck, X, ArrowRightLeft } from 'lucide-react';
 import { ethers } from 'ethers';
 
-const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
+const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
     // Get the most recent successfully bridged/burn transaction hash
     const latestBurnTx = history?.find(h => h.sourceTxHash)?.sourceTxHash;
 
@@ -56,6 +56,15 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                 console.log("Transaction Hash:", tx.hash);
                 await tx.wait(); // Wait for confirmation
                 console.log(`Swapped ${swapAmount} USDC for EURC`);
+                
+                if (addActivity) addActivity({
+                    type: 'swap',
+                    direction: 'USDC_TO_EURC',
+                    amountIn: swapAmount,
+                    amountOut: (Number(swapAmount) * 0.92).toFixed(2),
+                    status: 'completed',
+                    txHash: tx.hash
+                });
             } else {
                 const path = [EURC_ADDRESS, wethAddress];
                 // EURC token uses 6 decimals
@@ -79,12 +88,28 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                 console.log("Transaction Hash:", tx.hash);
                 await tx.wait(); // Wait for confirmation
                 console.log(`Swapped ${swapAmount} EURC for USDC`);
+                
+                if (addActivity) addActivity({
+                    type: 'swap',
+                    direction: 'EURC_TO_USDC',
+                    amountIn: swapAmount,
+                    amountOut: (Number(swapAmount) * 1.08).toFixed(2),
+                    status: 'completed',
+                    txHash: tx.hash
+                });
             }
             
             setSwapAmount('');
             alert('Swap successful!');
         } catch (error) {
             console.error("Swap failed", error);
+            if (addActivity) addActivity({
+                type: 'swap',
+                direction,
+                amountIn: swapAmount,
+                status: 'failed',
+                error: error.message || error
+            });
             alert(`Swap failed: ${error?.message || error}`);
         } finally {
             setIsSwapping(false);

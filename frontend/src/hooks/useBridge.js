@@ -33,27 +33,10 @@ function normalizeAddress(addr) {
     }
 }
 
-export const useBridge = (signer, address, { ensureNetwork, provider } = {}) => {
+export const useBridge = (signer, address, { ensureNetwork, provider, addActivity } = {}) => {
     const [quote, setQuote] = useState(null);
     const [status, setStatus] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [history, setHistory] = useState(() => {
-        const saved = localStorage.getItem("bridgeHistory");
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const saveToHistory = useCallback((tx) => {
-        setHistory(prev => {
-            if (prev.find(h => h.intent_id === tx.intent_id)) return prev;
-            const record = {
-                ...tx,
-                timestamp: Date.now()
-            };
-            const updated = [record, ...prev].slice(0, 5);
-            localStorage.setItem("bridgeHistory", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
 
     const fetchQuote = useCallback(async (amount, source, dest) => {
         try {
@@ -82,7 +65,10 @@ export const useBridge = (signer, address, { ensureNetwork, provider } = {}) => 
                     ...data
                 }));
                 
-                if (data.sourceTxHash) saveToHistory(data);
+                if (data.sourceTxHash && addActivity) addActivity({
+                    type: 'bridge',
+                    ...data
+                });
                 
                 if (data.status === 'completed' || data.status === 'failed') {
                     clearInterval(iv);
@@ -234,15 +220,29 @@ export const useBridge = (signer, address, { ensureNetwork, provider } = {}) => 
             // Improved Error Handling: Log the full stack and exact error
             console.error("Bridge execution intercepted:", err);
             
+            let errMsg = err.message;
             if (err.code === 4001 || err.message?.includes("User denied") || err.message?.includes("rejected")) {
-                setStatus({ status: 'failed', error: 'Transaction rejected by user' });
+                errMsg = 'Transaction rejected by user';
+                setStatus({ status: 'failed', error: errMsg });
             } else {
-                setStatus({ status: 'failed', error: err.message });
+                setStatus({ status: 'failed', error: errMsg });
+            }
+
+            if (addActivity) {
+                addActivity({
+                    type: 'bridge',
+                    id: Math.random().toString(36).substr(2, 9),
+                    source,
+                    dest,
+                    amount,
+                    status: 'failed',
+                    error: errMsg
+                });
             }
         } finally {
             setLoading(false);
         }
     };
 
-    return { quote, fetchQuote, initiateBridge, status, setStatus, loading, history };
+    return { quote, fetchQuote, initiateBridge, status, setStatus, loading };
 };
