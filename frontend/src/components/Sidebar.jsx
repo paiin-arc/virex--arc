@@ -1,9 +1,57 @@
-import React from 'react';
-import { ExternalLink, Layers, Navigation, ShieldCheck, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { ExternalLink, Layers, Navigation, ShieldCheck, X, ArrowRightLeft } from 'lucide-react';
+import { AppKit } from "@circle-fin/app-kit";
+import { createViemAdapterFromProvider } from "@circle-fin/adapter-viem-v2";
 
 const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
     // Get the most recent successfully bridged/burn transaction hash
     const latestBurnTx = history?.find(h => h.sourceTxHash)?.sourceTxHash;
+
+    const [swapAmount, setSwapAmount] = useState('');
+    const [isSwapping, setIsSwapping] = useState(false);
+
+    const handleSwap = async (e) => {
+        e.preventDefault();
+        if (!swapAmount || isNaN(swapAmount) || Number(swapAmount) <= 0) return;
+        
+        setIsSwapping(true);
+        try {
+            if (!window.ethereum) {
+                throw new Error("No browser wallet (e.g., MetaMask) found.");
+            }
+
+            // Create adapter from the user's browser wallet
+            const adapter = await createViemAdapterFromProvider({
+                provider: window.ethereum,
+            });
+
+            // Initialize the App Kit
+            const kit = new AppKit();
+
+            const result = await kit.swap({
+              from: { 
+                  adapter: adapter, 
+                  chain: "Arc_Testnet" 
+              },
+              tokenIn: "USDC",
+              tokenOut: "EURC",
+              amountIn: swapAmount,
+              config: { 
+                  kitKey: import.meta.env.VITE_KIT_KEY,
+                  slippageBps: 300 // 3% slippage
+              },
+            });
+            
+            console.log(`Swapped ${swapAmount} USDC for EURC`, result);
+            setSwapAmount('');
+            alert('Swap successful!');
+        } catch (error) {
+            console.error("Swap failed", error);
+            alert(`Swap failed: ${error?.message || error}`);
+        } finally {
+            setIsSwapping(false);
+        }
+    };
 
     return (
         <aside className={`fixed left-0 top-0 h-screen w-60 bg-[#0b0f1a] border-r border-[#1a2235] flex flex-col pt-8 pb-6 px-4 z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -54,6 +102,63 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                             <ExternalLink size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
                     </nav>
+                </div>
+
+                {/* Swap Section */}
+                <div>
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Swap (Arc Testnet)</h3>
+                    <div className="px-2">
+                        <form onSubmit={handleSwap} className="bg-[#1a2235] p-3 rounded-xl border border-white/5 space-y-3 relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                            
+                            {/* Input: USDC */}
+                            <div className="space-y-1 relative z-10">
+                                <label className="text-[10px] text-gray-400 font-medium ml-1">Pay USDC</label>
+                                <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5 focus-within:border-blue-500/50 transition-colors">
+                                    <input 
+                                        type="number" 
+                                        min="0"
+                                        step="any"
+                                        placeholder="0.00" 
+                                        className="w-full bg-transparent text-sm text-white outline-none"
+                                        value={swapAmount}
+                                        onChange={(e) => setSwapAmount(e.target.value)}
+                                    />
+                                    <span className="text-xs text-blue-400 font-bold ml-2">USDC</span>
+                                </div>
+                            </div>
+
+                            {/* Arrow icon */}
+                            <div className="flex justify-center -my-2 relative z-10">
+                                <div className="bg-[#1a2235] p-1 rounded-full border border-white/5 shadow-sm text-gray-400">
+                                    <ArrowRightLeft size={14} className="rotate-90" />
+                                </div>
+                            </div>
+
+                            {/* Output: EURC (Mock estimation 1:0.92) */}
+                            <div className="space-y-1 relative z-10">
+                                <label className="text-[10px] text-gray-400 font-medium ml-1">Receive EURC</label>
+                                <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5">
+                                    <input 
+                                        type="text" 
+                                        readOnly
+                                        placeholder="0.00" 
+                                        className="w-full bg-transparent text-sm text-gray-300 outline-none cursor-not-allowed"
+                                        value={swapAmount ? (Number(swapAmount) * 0.92).toFixed(2) : ''}
+                                    />
+                                    <span className="text-xs text-purple-400 font-bold ml-2">EURC</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                type="submit" 
+                                disabled={!swapAmount || Number(swapAmount) <= 0 || isSwapping}
+                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-semibold py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
+                            >
+                                {isSwapping ? 'Swapping...' : 'Swap'}
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
                 {/* Wallet Aware Section */}
