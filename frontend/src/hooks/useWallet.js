@@ -54,6 +54,7 @@ const getInjectedProvider = () => {
 export const useWallet = () => {
     const [address, setAddress] = useState(null);
     const [balance, setBalance] = useState("0.00");
+    const [eurcBalance, setEurcBalance] = useState("0.00");
     const [isConnected, setIsConnected] = useState(false);
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
@@ -65,6 +66,16 @@ export const useWallet = () => {
             const network = await prov.getNetwork();
             const decimals = network.chainId === 5042002 ? 18 : 18; // Use correct decimals per chain if needed
             setBalance(parseFloat(ethers.utils.formatUnits(bal, 18)).toFixed(4));
+
+            if (network.chainId === 5042002) {
+                const EURC_ADDRESS = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
+                const erc20Abi = ["function balanceOf(address owner) view returns (uint256)"];
+                const eurcContract = new ethers.Contract(EURC_ADDRESS, erc20Abi, prov);
+                const eurcBal = await eurcContract.balanceOf(addr);
+                setEurcBalance(parseFloat(ethers.utils.formatUnits(eurcBal, 6)).toFixed(4));
+            } else {
+                setEurcBalance("0.00");
+            }
         } catch (err) {
             console.error("Balance refresh failed", err);
         }
@@ -102,6 +113,7 @@ export const useWallet = () => {
     const disconnect = () => {
         setAddress(null);
         setBalance("0.00");
+        setEurcBalance("0.00");
         setIsConnected(false);
         setProvider(null);
         setSigner(null);
@@ -197,5 +209,5 @@ export const useWallet = () => {
         };
     }, [address, refreshBalance]);
 
-    return { address, balance, isConnected, provider, signer, connect, disconnect, ensureNetwork, refreshBalance };
+    return { address, balance, eurcBalance, isConnected, provider, signer, connect, disconnect, ensureNetwork, refreshBalance };
 };

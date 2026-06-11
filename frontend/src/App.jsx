@@ -35,6 +35,7 @@ function App() {
   const { 
     address, 
     balance, 
+    eurcBalance,
     isConnected, 
     connect, 
     disconnect, 
@@ -81,6 +82,7 @@ function App() {
                 provider={provider}
                 address={address || ''} 
                 balance={balance || '0.00'} 
+                eurcBalance={eurcBalance || '0.00'}
                 isConnected={isConnected} 
                 onConnect={connect}
                 onDisconnect={disconnect}

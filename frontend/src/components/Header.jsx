@@ -130,7 +130,7 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
     );
 };
 
-const Header = ({ provider, address, balance, isConnected, onConnect, onDisconnect, isBridging, onMenuClick }) => {
+const Header = ({ provider, address, balance, eurcBalance, isConnected, onConnect, onDisconnect, isBridging, onMenuClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [blockNumber, setBlockNumber] = useState(null);
   const [networkName, setNetworkName] = useState('');
@@ -221,6 +221,7 @@ const Header = ({ provider, address, balance, isConnected, onConnect, onDisconne
               <div className="flex flex-col items-end">
                 <span className="text-[10px] text-virex-text-secondary uppercase tracking-widest font-semibold">Balance</span>
                 <span className="text-xs font-black text-white">{balance} USDC</span>
+                <span className="text-xs font-black text-white">{eurcBalance} EURC</span>
               </div>
               <div className="w-[1px] h-6 bg-white/10" />
               <div className="flex flex-col">

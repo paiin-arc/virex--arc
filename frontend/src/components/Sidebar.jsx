@@ -7,6 +7,7 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
     const latestBurnTx = history?.find(h => h.sourceTxHash)?.sourceTxHash;
 
     const [swapAmount, setSwapAmount] = useState('');
+    const [direction, setDirection] = useState('USDC_TO_EURC');
     const [isSwapping, setIsSwapping] = useState(false);
 
     const handleSwap = async (e) => {
@@ -28,34 +29,58 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
 
             const routerAbi = [
                 "function WETH() external view returns (address)",
-                "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)"
+                "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable returns (uint[] memory amounts)",
+                "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)"
             ];
             
             const router = new ethers.Contract(ROUTER_ADDRESS, routerAbi, signer);
             
             // Get the wrapped native token address dynamically from the router
             const wethAddress = await router.WETH();
-            const path = [wethAddress, EURC_ADDRESS];
-
-            // Native USDC gas token uses 18 decimals on Arc Testnet
-            const amountInWei = ethers.utils.parseUnits(swapAmount.toString(), 18);
-            const amountOutMin = 0; // Note: In production, calculate proper slippage
-            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
             const userAddress = await signer.getAddress();
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
 
             console.log("Submitting Swap Transaction...");
-            const tx = await router.swapExactETHForTokens(
-                amountOutMin,
-                path,
-                userAddress,
-                deadline,
-                { value: amountInWei }
-            );
+
+            if (direction === 'USDC_TO_EURC') {
+                const path = [wethAddress, EURC_ADDRESS];
+                // Native USDC gas token uses 18 decimals on Arc Testnet
+                const amountInWei = ethers.utils.parseUnits(swapAmount.toString(), 18);
+                const tx = await router.swapExactETHForTokens(
+                    0, // Note: In production, calculate proper slippage
+                    path,
+                    userAddress,
+                    deadline,
+                    { value: amountInWei }
+                );
+                console.log("Transaction Hash:", tx.hash);
+                await tx.wait(); // Wait for confirmation
+                console.log(`Swapped ${swapAmount} USDC for EURC`);
+            } else {
+                const path = [EURC_ADDRESS, wethAddress];
+                // EURC token uses 6 decimals
+                const amountInWei = ethers.utils.parseUnits(swapAmount.toString(), 6);
+                
+                // Approve the router to spend EURC
+                const erc20Abi = ["function approve(address spender, uint256 amount) public returns (bool)"];
+                const eurcContract = new ethers.Contract(EURC_ADDRESS, erc20Abi, signer);
+                console.log("Approving EURC...");
+                const approveTx = await eurcContract.approve(ROUTER_ADDRESS, amountInWei);
+                await approveTx.wait();
+                console.log("EURC Approved.");
+
+                const tx = await router.swapExactTokensForETH(
+                    amountInWei,
+                    0,
+                    path,
+                    userAddress,
+                    deadline
+                );
+                console.log("Transaction Hash:", tx.hash);
+                await tx.wait(); // Wait for confirmation
+                console.log(`Swapped ${swapAmount} EURC for USDC`);
+            }
             
-            console.log("Transaction Hash:", tx.hash);
-            await tx.wait(); // Wait for confirmation
-            
-            console.log(`Swapped ${swapAmount} USDC for EURC`);
             setSwapAmount('');
             alert('Swap successful!');
         } catch (error) {
@@ -124,9 +149,11 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                         <form onSubmit={handleSwap} className="bg-[#1a2235] p-3 rounded-xl border border-white/5 space-y-3 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                             
-                            {/* Input: USDC */}
+                            {/* Input: USDC or EURC */}
                             <div className="space-y-1 relative z-10">
-                                <label className="text-[10px] text-gray-400 font-medium ml-1">Pay USDC</label>
+                                <label className="text-[10px] text-gray-400 font-medium ml-1">
+                                    Pay {direction === 'USDC_TO_EURC' ? 'USDC' : 'EURC'}
+                                </label>
                                 <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5 focus-within:border-blue-500/50 transition-colors">
                                     <input 
                                         type="number" 
@@ -137,29 +164,39 @@ const Sidebar = ({ userAddress, history, isOpen, onClose }) => {
                                         value={swapAmount}
                                         onChange={(e) => setSwapAmount(e.target.value)}
                                     />
-                                    <span className="text-xs text-blue-400 font-bold ml-2">USDC</span>
+                                    <span className={`text-xs font-bold ml-2 ${direction === 'USDC_TO_EURC' ? 'text-blue-400' : 'text-purple-400'}`}>
+                                        {direction === 'USDC_TO_EURC' ? 'USDC' : 'EURC'}
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Arrow icon */}
                             <div className="flex justify-center -my-2 relative z-10">
-                                <div className="bg-[#1a2235] p-1 rounded-full border border-white/5 shadow-sm text-gray-400">
+                                <button 
+                                    type="button"
+                                    onClick={() => setDirection(prev => prev === 'USDC_TO_EURC' ? 'EURC_TO_USDC' : 'USDC_TO_EURC')}
+                                    className="bg-[#1a2235] p-1.5 rounded-full border border-white/5 shadow-sm text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                >
                                     <ArrowRightLeft size={14} className="rotate-90" />
-                                </div>
+                                </button>
                             </div>
 
-                            {/* Output: EURC (Mock estimation 1:0.92) */}
+                            {/* Output: EURC or USDC */}
                             <div className="space-y-1 relative z-10">
-                                <label className="text-[10px] text-gray-400 font-medium ml-1">Receive EURC</label>
+                                <label className="text-[10px] text-gray-400 font-medium ml-1">
+                                    Receive {direction === 'USDC_TO_EURC' ? 'EURC' : 'USDC'}
+                                </label>
                                 <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5">
                                     <input 
                                         type="text" 
                                         readOnly
                                         placeholder="0.00" 
                                         className="w-full bg-transparent text-sm text-gray-300 outline-none cursor-not-allowed"
-                                        value={swapAmount ? (Number(swapAmount) * 0.92).toFixed(2) : ''}
+                                        value={swapAmount ? (Number(swapAmount) * (direction === 'USDC_TO_EURC' ? 0.92 : 1.08)).toFixed(2) : ''}
                                     />
-                                    <span className="text-xs text-purple-400 font-bold ml-2">EURC</span>
+                                    <span className={`text-xs font-bold ml-2 ${direction === 'USDC_TO_EURC' ? 'text-purple-400' : 'text-blue-400'}`}>
+                                        {direction === 'USDC_TO_EURC' ? 'EURC' : 'USDC'}
+                                    </span>
                                 </div>
                             </div>
 
