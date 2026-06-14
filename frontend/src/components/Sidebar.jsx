@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Layers, Navigation, ShieldCheck, X, ArrowRightLeft } from 'lucide-react';
 import { ethers } from 'ethers';
 
-const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
+const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onClose }) => {
     // Get the most recent successfully bridged/burn transaction hash
     const latestBurnTx = history?.find(h => h.sourceTxHash)?.sourceTxHash;
 
@@ -16,12 +16,18 @@ const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
         
         setIsSwapping(true);
         try {
-            if (!window.ethereum) {
-                throw new Error("No browser wallet (e.g., MetaMask) found.");
+            if (!userAddress) {
+                throw new Error("Connect your wallet before swapping.");
             }
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
+            if (!ensureNetwork) {
+                throw new Error("Wallet network management is unavailable.");
+            }
+
+            const { provider, signer } = await ensureNetwork('arc');
+            if (!provider || !signer) {
+                throw new Error("Connect your wallet before swapping.");
+            }
 
             // ApexisSwap V1 Router on Arc Testnet
             const ROUTER_ADDRESS = "0x437b1aBf6e5a69548849b15EC35f83A73Fa1E28F";
@@ -33,11 +39,16 @@ const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
                 "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)"
             ];
             
+            const routerCode = await provider.getCode(ROUTER_ADDRESS);
+            if (routerCode === '0x') {
+                throw new Error("ApexisSwap router was not found. Switch your wallet to Arc Testnet and try again.");
+            }
+
             const router = new ethers.Contract(ROUTER_ADDRESS, routerAbi, signer);
             
             // Get the wrapped native token address dynamically from the router
             const wethAddress = await router.WETH();
-            const userAddress = await signer.getAddress();
+            const recipientAddress = await signer.getAddress();
             const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
 
             console.log("Submitting Swap Transaction...");
@@ -49,7 +60,7 @@ const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
                 const tx = await router.swapExactETHForTokens(
                     0, // Note: In production, calculate proper slippage
                     path,
-                    userAddress,
+                    recipientAddress,
                     deadline,
                     { value: amountInWei }
                 );
@@ -82,7 +93,7 @@ const Sidebar = ({ userAddress, history, addActivity, isOpen, onClose }) => {
                     amountInWei,
                     0,
                     path,
-                    userAddress,
+                    recipientAddress,
                     deadline
                 );
                 console.log("Transaction Hash:", tx.hash);

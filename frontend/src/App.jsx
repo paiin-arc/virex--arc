@@ -76,6 +76,7 @@ function App() {
             userAddress={address} 
             history={history} 
             addActivity={addActivity}
+            ensureNetwork={ensureNetwork}
             isOpen={isSidebarOpen} 
             onClose={() => setIsSidebarOpen(false)} 
           />
