@@ -37,7 +37,7 @@ const SUPPORTED_CHAINS = [
 ];
 
 const ChainSelectorMenu = ({ onSelect, currentId, onClose }) => (
-    <div className="absolute top-full left-0 right-0 mt-2 z-30 p-2 glass-effect rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="absolute top-full left-0 right-0 mt-2 z-30 p-2 bg-virex-card border border-virex-border rounded-virex-inner shadow-2xl shadow-black/50">
         <div className="grid grid-cols-1 gap-1">
             {SUPPORTED_CHAINS.map(chain => (
                 <button
@@ -91,137 +91,149 @@ const TransferCard = ({
   }, [amount, sourceChainId, destChainId]);
 
   return (
-    <div className="w-full max-w-[500px] mx-auto virex-card p-4 md:p-6 space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Chain Selector */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 p-2 bg-black/20 rounded-[22px] border border-white/5 relative">
-        <div 
-          onClick={() => setSelOpen(selOpen === 'source' ? null : 'source')}
-          className="w-full md:flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
-        >
-          <div className={`w-8 h-8 rounded-lg ${sourceChain.bg} flex items-center justify-center ${sourceChain.color} overflow-hidden p-1.5`}>
-            <SafeIcon src={chainIcons[sourceChain.id]} alt={sourceChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
+    <div className="w-full max-w-[520px] mx-auto virex-card overflow-hidden">
+      {/* Card Header */}
+      <div className="px-6 pt-6 pb-4 border-b border-virex-border">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="virex-label">Cross-Chain Transfer</span>
+            <h3 className="text-lg font-black text-white mt-0.5">Bridge USDC</h3>
           </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-tighter">Source</span>
-            <span className="text-sm font-bold flex items-center gap-1">
-                {sourceChain.name}
-                <ChevronDown size={12} className="text-virex-text-secondary group-hover:text-virex-primary" />
-            </span>
+          <div className="flex items-center gap-1.5 text-virex-text-secondary">
+            <ShieldCheck size={14} className="text-virex-success" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">CCTP Secured</span>
           </div>
-          {selOpen === 'source' && (
-              <ChainSelectorMenu 
-                onSelect={(id) => {
-                    if (id === destChainId) handleSwap();
-                    else setSourceChainId(id);
-                }} 
-                currentId={sourceChainId} 
-                onClose={() => setSelOpen(null)}
-              />
-          )}
+        </div>
+      </div>
+
+      <div className="p-6 space-y-5">
+        {/* Chain Selector */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3 relative">
+          <div 
+            onClick={() => setSelOpen(selOpen === 'source' ? null : 'source')}
+            className="w-full md:flex-1 p-3.5 virex-card-inner flex items-center gap-3 cursor-pointer hover:border-virex-border-hover transition-all group relative"
+          >
+            <div className={`w-9 h-9 rounded-xl ${sourceChain.bg} flex items-center justify-center ${sourceChain.color} overflow-hidden p-1.5`}>
+              <SafeIcon src={chainIcons[sourceChain.id]} alt={sourceChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
+            </div>
+            <div className="flex flex-col flex-1">
+              <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-wider">Source</span>
+              <span className="text-sm font-bold flex items-center gap-1">
+                  {sourceChain.name}
+                  <ChevronDown size={12} className="text-virex-text-secondary group-hover:text-virex-primary transition-colors" />
+              </span>
+            </div>
+            {selOpen === 'source' && (
+                <ChainSelectorMenu 
+                  onSelect={(id) => {
+                      if (id === destChainId) handleSwap();
+                      else setSourceChainId(id);
+                  }} 
+                  currentId={sourceChainId} 
+                  onClose={() => setSelOpen(null)}
+                />
+            )}
+          </div>
+
+          <button 
+              onClick={handleSwap}
+              className="w-10 h-10 rounded-full bg-virex-card border-2 border-virex-border flex items-center justify-center hover:border-virex-primary hover:bg-virex-primary/10 active:rotate-180 transition-all z-10 rotate-90 md:rotate-0 -my-2 md:my-0 shrink-0"
+          >
+            <ArrowLeftRight size={16} className="text-virex-text-secondary" />
+          </button>
+
+          <div 
+            onClick={() => setSelOpen(selOpen === 'dest' ? null : 'dest')}
+            className="w-full md:flex-1 p-3.5 virex-card-inner flex items-center gap-3 cursor-pointer hover:border-virex-border-hover transition-all group relative"
+          >
+            <div className={`w-9 h-9 rounded-xl ${destChain.bg} flex items-center justify-center ${destChain.color} overflow-hidden p-1.5`}>
+              <SafeIcon src={chainIcons[destChain.id]} alt={destChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
+            </div>
+            <div className="flex flex-col flex-1">
+              <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-wider">Destination</span>
+              <span className="text-sm font-bold flex items-center gap-1">
+                  {destChain.name}
+                  <ChevronDown size={12} className="text-virex-text-secondary group-hover:text-virex-primary transition-colors" />
+              </span>
+            </div>
+            {selOpen === 'dest' && (
+                <ChainSelectorMenu 
+                  onSelect={(id) => {
+                      if (id === sourceChainId) handleSwap();
+                      else setDestChainId(id);
+                  }} 
+                  currentId={destChainId} 
+                  onClose={() => setSelOpen(null)}
+                />
+            )}
+          </div>
         </div>
 
+        {/* Amount Input */}
+        <div className="virex-card-inner p-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="virex-label">Amount</span>
+            <span className="text-xs text-virex-text-secondary font-medium">
+              Available: <b className="text-white">{currentBalance} USDC</b>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <input 
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              className="flex-1 bg-transparent text-3xl md:text-4xl font-black text-white outline-none placeholder:text-white/10 min-w-0"
+            />
+            <div className="flex items-center gap-2 px-3.5 py-2 bg-white/[0.06] border border-virex-border rounded-virex-pill shrink-0">
+              <SafeIcon src={tokenIcons.usdc} alt="USDC" className="w-5 h-5 object-contain rounded-full" fallbackIcon={HelpCircle} />
+              <span className="text-sm font-bold">USDC</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Destination Address */}
+        <div className="space-y-2">
+          <label className="virex-label">Destination Address</label>
+          <div className="relative">
+            <input 
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="0x..."
+              className="virex-input pr-12 font-mono text-sm"
+            />
+            <Landmark className="absolute right-4 top-1/2 -translate-y-1/2 text-virex-text-secondary" size={18} />
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="virex-stat-cell">
+            <span className="text-[9px] font-bold text-virex-text-secondary uppercase tracking-wider">Fee</span>
+            <span className="text-sm font-black">{FEE_AMOUNT} USDC</span>
+          </div>
+          <div className="virex-stat-cell">
+            <span className="text-[9px] font-bold text-virex-text-secondary uppercase tracking-wider">Receive</span>
+            <span className="text-sm font-black text-virex-success">{RECEIVE_AMOUNT} USDC</span>
+          </div>
+          <div className="virex-stat-cell items-end">
+            <span className="text-[9px] font-bold text-virex-text-secondary uppercase tracking-wider">Time</span>
+            <span className="text-sm font-black">~45s</span>
+          </div>
+        </div>
+
+        {/* Action Button */}
         <button 
-            onClick={handleSwap}
-            className="w-10 h-10 rounded-full bg-virex-primary flex items-center justify-center shadow-lg shadow-virex-primary/40 hover:scale-110 active:rotate-180 transition-all z-10 rotate-90 md:rotate-0 -my-3 md:my-0 border-4 border-[#111827] md:border-none"
+          disabled={!isConnected || loading || !amount || parseFloat(amount) <= 0 || !address}
+          onClick={() => onTransfer(amount, sourceChainId, destChainId, address)}
+          className="virex-button group relative overflow-hidden disabled:opacity-30 disabled:hover:brightness-100 disabled:shadow-none"
         >
-          <ArrowLeftRight size={18} className="text-white" />
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {loading ? "Processing..." : `Send ${RECEIVE_AMOUNT} USDC to ${destChain.name.split(' ')[0]}`}
+            {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+          </span>
         </button>
-
-        <div 
-          onClick={() => setSelOpen(selOpen === 'dest' ? null : 'dest')}
-          className="w-full md:flex-1 p-3 bg-virex-card border border-white/10 rounded-xl flex items-center gap-3 cursor-pointer hover:border-virex-primary transition-all group"
-        >
-          <div className={`w-8 h-8 rounded-lg ${destChain.bg} flex items-center justify-center ${destChain.color} overflow-hidden p-1.5`}>
-            <SafeIcon src={chainIcons[destChain.id]} alt={destChain.name} className="w-full h-full object-contain drop-shadow-md" fallbackIcon={HelpCircle} />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-bold text-virex-text-secondary tracking-tighter">Destination</span>
-            <span className="text-sm font-bold flex items-center gap-1">
-                {destChain.name}
-                <ChevronDown size={12} className="text-virex-text-secondary group-hover:text-virex-primary" />
-            </span>
-          </div>
-          {selOpen === 'dest' && (
-              <ChainSelectorMenu 
-                onSelect={(id) => {
-                    if (id === sourceChainId) handleSwap();
-                    else setDestChainId(id);
-                }} 
-                currentId={destChainId} 
-                onClose={() => setSelOpen(null)}
-              />
-          )}
-        </div>
-      </div>
-
-      {/* Amount Input */}
-      <div className="space-y-4">
-        <div className="relative group">
-          <input 
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="0.00"
-            className="w-full bg-transparent text-5xl md:text-7xl font-black text-center text-white outline-none placeholder:text-white/5"
-          />
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 cursor-pointer transition-colors">
-            <SafeIcon src={tokenIcons.usdc} alt="USDC" className="w-5 h-5 object-contain rounded-full" fallbackIcon={HelpCircle} />
-            <span className="text-sm font-bold">USDC</span>
-            <ChevronDown size={14} className="text-virex-text-secondary" />
-          </div>
-        </div>
-        <div className="flex justify-center">
-            <span className="text-xs text-virex-text-secondary font-medium">Available: <b className="text-virex-text-primary">{currentBalance} USDC</b></span>
-        </div>
-      </div>
-
-      {/* Destination Address */}
-      <div className="space-y-2">
-        <label className="text-[10px] uppercase font-bold text-virex-text-secondary px-1">Destination Address</label>
-        <div className="relative">
-          <input 
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="0x..."
-            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-sm font-medium focus:border-virex-primary transition-all pr-12"
-          />
-          <Landmark className="absolute right-4 top-1/2 -translate-y-1/2 text-virex-text-secondary" size={18} />
-        </div>
-      </div>
-
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-2xl">
-        <div className="flex flex-col gap-1">
-          <span className="text-[9px] font-bold text-virex-text-secondary uppercase">Fee</span>
-          <span className="text-sm font-bold">{FEE_AMOUNT} USDC</span>
-        </div>
-        <div className="flex flex-col gap-1 border-x border-white/5 px-3">
-          <span className="text-[9px] font-bold text-virex-text-secondary uppercase">Receive</span>
-          <span className="text-sm font-bold text-virex-success">{RECEIVE_AMOUNT} USDC</span>
-        </div>
-        <div className="flex flex-col gap-1 items-end">
-          <span className="text-[9px] font-bold text-virex-text-secondary uppercase">Time</span>
-          <span className="text-sm font-bold">~45s</span>
-        </div>
-      </div>
-
-      {/* Action Button */}
-      <button 
-        disabled={!isConnected || loading || !amount || parseFloat(amount) <= 0 || !address}
-        onClick={() => onTransfer(amount, sourceChainId, destChainId, address)}
-        className="virex-button group relative overflow-hidden disabled:opacity-30 disabled:hover:scale-100 disabled:shadow-none"
-      >
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          {loading ? "Processing..." : `Send ${RECEIVE_AMOUNT} USDC to ${destChain.name.split(' ')[0]}`}
-          {!loading && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
-        </span>
-        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-      </button>
-
-      <div className="flex items-center justify-center gap-2 text-virex-text-secondary opacity-50">
-        <ShieldCheck size={14} />
-        <span className="text-[10px] font-bold uppercase tracking-wider">Secured by Circle CCTP</span>
       </div>
     </div>
   );

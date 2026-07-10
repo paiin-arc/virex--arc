@@ -128,7 +128,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
     };
 
     return (
-        <aside className={`fixed left-0 top-0 h-screen w-60 bg-[#0b0f1a] border-r border-[#1a2235] flex flex-col pt-8 pb-6 px-4 z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside className={`fixed left-0 top-0 h-screen w-60 bg-virex-bg border-r border-virex-border flex flex-col pt-8 pb-6 px-4 z-50 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             {/* Close Button Mobile */}
             <button
                 onClick={onClose}
@@ -159,7 +159,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                             href="https://testnet.arcscan.app/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
                         >
                             <Navigation size={18} className="text-blue-400 group-hover:text-blue-300" />
                             <span className="text-sm font-medium">Arc Explorer</span>
@@ -169,7 +169,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                             href="https://faucet.circle.com/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
                         >
                             <Layers size={18} className="text-purple-400 group-hover:text-purple-300" />
                             <span className="text-sm font-medium">USDC Faucet</span>
@@ -182,15 +182,15 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                 <div>
                     <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">Swap (Arc Testnet)</h3>
                     <div className="px-2">
-                        <form onSubmit={handleSwap} className="bg-[#1a2235] p-3 rounded-xl border border-white/5 space-y-3 relative overflow-hidden group">
+                        <form onSubmit={handleSwap} className="bg-black/30 p-4 rounded-virex-inner border border-virex-border space-y-3 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                             
                             {/* Input: USDC or EURC */}
                             <div className="space-y-1 relative z-10">
-                                <label className="text-[10px] text-gray-400 font-medium ml-1">
+                                <label className="text-[10px] text-gray-400 font-semibold ml-1">
                                     Pay {direction === 'USDC_TO_EURC' ? 'USDC' : 'EURC'}
                                 </label>
-                                <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5 focus-within:border-blue-500/50 transition-colors">
+                                <div className="flex items-center bg-virex-card-inner rounded-xl p-2 border border-virex-border focus-within:border-virex-primary/50 transition-colors">
                                     <input 
                                         type="number" 
                                         min="0"
@@ -211,7 +211,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                 <button 
                                     type="button"
                                     onClick={() => setDirection(prev => prev === 'USDC_TO_EURC' ? 'EURC_TO_USDC' : 'USDC_TO_EURC')}
-                                    className="bg-[#1a2235] p-1.5 rounded-full border border-white/5 shadow-sm text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                    className="bg-virex-card p-1.5 rounded-full border border-virex-border shadow-sm text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                                 >
                                     <ArrowRightLeft size={14} className="rotate-90" />
                                 </button>
@@ -219,10 +219,10 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
 
                             {/* Output: EURC or USDC */}
                             <div className="space-y-1 relative z-10">
-                                <label className="text-[10px] text-gray-400 font-medium ml-1">
+                                <label className="text-[10px] text-gray-400 font-semibold ml-1">
                                     Receive {direction === 'USDC_TO_EURC' ? 'EURC' : 'USDC'}
                                 </label>
-                                <div className="flex items-center bg-[#0b0f1a] rounded-lg p-2 border border-white/5">
+                                <div className="flex items-center bg-virex-card-inner rounded-xl p-2 border border-virex-border">
                                     <input 
                                         type="text" 
                                         readOnly
@@ -239,7 +239,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                             <button 
                                 type="submit" 
                                 disabled={!swapAmount || Number(swapAmount) <= 0 || isSwapping}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-xs font-semibold py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(37,99,235,0.2)] disabled:opacity-50 disabled:cursor-not-allowed relative z-10"
+                                className="w-full py-2.5 px-4 rounded-virex-pill font-bold text-xs text-white bg-accent-gradient hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed relative z-10 shadow-[0_4px_12px_rgba(79,70,229,0.2)] cursor-pointer"
                             >
                                 {isSwapping ? 'Swapping...' : 'Swap'}
                             </button>
@@ -257,7 +257,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                     href={`https://testnet.arcscan.app/address/${userAddress}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
                                 >
                                     <div className="w-2 h-2 rounded-full bg-green-400 shrink-0 shadow-[0_0_8px_rgba(74,222,128,0.5)]"></div>
                                     <span className="text-sm font-medium truncate">View My Wallet</span>
@@ -270,7 +270,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                     href={`https://testnet.arcscan.app/tx/${latestBurnTx}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-300 hover:text-white hover:bg-[#1a2235] transition-all group"
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
                                 >
                                     <ShieldCheck size={18} className="text-blue-500 group-hover:text-blue-400 transition-colors" />
                                     <span className="text-sm font-medium truncate">Last Burn TX</span>
@@ -283,14 +283,14 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
             </div>
 
             {/* Footer Section */}
-            <div className="mt-auto pt-6 border-t border-[#1a2235]">
+            <div className="mt-auto pt-6 border-t border-virex-border">
                 <a
                     href="https://x.com/paiin_ip"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#1a2235] transition-all group"
+                    className="flex items-center gap-3 p-2 rounded-virex-inner hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
                 >
-                    <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 group-hover:border-blue-400 transition-colors shrink-0">
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-virex-border group-hover:border-blue-400 transition-colors shrink-0">
                         <img
                             src="/paiin-pfp.jpg"
                             alt="paiin_ip"
