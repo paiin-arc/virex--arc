@@ -147,7 +147,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                         className="w-14 h-14 object-contain relative z-10"
                     />
                 </div>
-                <h1 className="mt-4 text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Virex</h1>
+                <h1 className="mt-4 text-xl font-bold text-virex-text-primary">Virex</h1>
             </div>
 
             {/* Navigation / Links Section */}
@@ -159,9 +159,9 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                             href="https://testnet.arcscan.app/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-virex-text-secondary hover:text-virex-text-primary hover:bg-virex-card-inner border border-transparent hover:border-virex-border transition-all group"
                         >
-                            <Navigation size={18} className="text-blue-400 group-hover:text-blue-300" />
+                            <Navigation size={18} className="text-blue-500 group-hover:text-blue-600" />
                             <span className="text-sm font-medium">Arc Explorer</span>
                             <ExternalLink size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
@@ -169,9 +169,9 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                             href="https://faucet.circle.com/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-gray-300 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-virex-border transition-all group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-virex-inner text-virex-text-secondary hover:text-virex-text-primary hover:bg-virex-card-inner border border-transparent hover:border-virex-border transition-all group"
                         >
-                            <Layers size={18} className="text-purple-400 group-hover:text-purple-300" />
+                            <Layers size={18} className="text-purple-500 group-hover:text-purple-600" />
                             <span className="text-sm font-medium">USDC Faucet</span>
                             <ExternalLink size={14} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
@@ -196,7 +196,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                         min="0"
                                         step="any"
                                         placeholder="0.00" 
-                                        className="w-full bg-transparent text-sm text-white outline-none"
+                                        className="w-full bg-transparent text-sm text-virex-text-primary outline-none"
                                         value={swapAmount}
                                         onChange={(e) => setSwapAmount(e.target.value)}
                                     />
@@ -211,7 +211,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                 <button 
                                     type="button"
                                     onClick={() => setDirection(prev => prev === 'USDC_TO_EURC' ? 'EURC_TO_USDC' : 'USDC_TO_EURC')}
-                                    className="bg-virex-card p-1.5 rounded-full border border-virex-border shadow-sm text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                    className="bg-virex-card p-1.5 rounded-full border border-virex-border shadow-sm text-gray-400 hover:text-virex-text-primary hover:bg-virex-card-inner transition-colors cursor-pointer"
                                 >
                                     <ArrowRightLeft size={14} className="rotate-90" />
                                 </button>
@@ -227,7 +227,7 @@ const Sidebar = ({ userAddress, history, addActivity, ensureNetwork, isOpen, onC
                                         type="text" 
                                         readOnly
                                         placeholder="0.00" 
-                                        className="w-full bg-transparent text-sm text-gray-300 outline-none cursor-not-allowed"
+                                        className="w-full bg-transparent text-sm text-virex-text-secondary outline-none cursor-not-allowed"
                                         value={swapAmount ? (Number(swapAmount) * (direction === 'USDC_TO_EURC' ? 0.92 : 1.08)).toFixed(2) : ''}
                                     />
                                     <span className={`text-xs font-bold ml-2 ${direction === 'USDC_TO_EURC' ? 'text-purple-400' : 'text-blue-400'}`}>

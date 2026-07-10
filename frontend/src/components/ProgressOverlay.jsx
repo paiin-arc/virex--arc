@@ -8,7 +8,7 @@ const Step = ({ label, status, hash, explorerUrl, isActive }) => {
 
     return (
         <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
-            isActive ? 'bg-virex-primary/5 border-virex-primary/20' : 'bg-transparent border-white/5 opacity-40'
+            isActive ? 'bg-virex-primary/5 border-virex-primary/20' : 'bg-transparent border-virex-border opacity-40'
         } ${status === 'failed' && isActive ? 'border-red-500/50 bg-red-500/5' : ''}`}>
             <div className="flex items-center gap-3">
                 {status === 'failed' && isActive ? (
@@ -22,7 +22,7 @@ const Step = ({ label, status, hash, explorerUrl, isActive }) => {
                 )}
                 
                 <div className="flex flex-col">
-                    <span className={`text-sm font-bold ${isActive ? 'text-white' : 'text-virex-text-secondary'}`}>{label}</span>
+                    <span className={`text-sm font-bold ${isActive ? 'text-virex-text-primary' : 'text-virex-text-secondary'}`}>{label}</span>
                     {hash && (
                         <span className="text-[10px] font-mono text-virex-text-secondary truncate w-32">
                             {hash.slice(0, 10)}...
@@ -36,7 +36,7 @@ const Step = ({ label, status, hash, explorerUrl, isActive }) => {
                     href={explorerUrl} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="p-2 hover:bg-white/5 rounded-lg text-virex-text-secondary transition-colors"
+                    className="p-2 hover:bg-virex-card-inner rounded-lg text-virex-text-secondary transition-colors"
                 >
                     <ExternalLink size={14} />
                 </a>
@@ -73,7 +73,7 @@ const ProgressOverlay = ({ status, onClose }) => {
                 >
                     <button 
                         onClick={onClose}
-                        className="absolute top-6 right-6 p-2 hover:bg-white/5 rounded-full text-virex-text-secondary transition-colors"
+                        className="absolute top-6 right-6 p-2 hover:bg-virex-card-inner border border-transparent hover:border-virex-border rounded-full text-virex-text-secondary transition-colors"
                     >
                         <X size={20} />
                     </button>
@@ -90,7 +90,7 @@ const ProgressOverlay = ({ status, onClose }) => {
                                 <Loader2 className="text-white animate-spin" size={32} />
                             )}
                         </div>
-                        <h2 className="text-2xl font-black text-white mb-2">
+                        <h2 className="text-2xl font-black text-virex-text-primary mb-2">
                             {isFailed ? 'Transfer Failed' : currentStatus === 'completed' ? 'Transfer Complete!' : 'Processing Transfer'}
                         </h2>
                         <p className="text-virex-text-secondary text-sm font-medium">
@@ -125,7 +125,7 @@ const ProgressOverlay = ({ status, onClose }) => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             onClick={onClose}
-                            className="w-full mt-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-sm font-bold hover:bg-white/10 transition-colors"
+                            className="w-full mt-10 py-4 bg-virex-card-inner border border-virex-border rounded-2xl text-sm font-bold hover:bg-virex-border text-virex-text-primary transition-colors"
                         >
                             Done
                         </motion.button>

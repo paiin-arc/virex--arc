@@ -79,15 +79,15 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                className="relative w-full max-w-md bg-[#111827] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl shadow-black"
+                className="relative w-full max-w-md bg-virex-card border border-virex-border rounded-[32px] overflow-hidden shadow-2xl"
             >
                 <div className="p-8">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h2 className="text-2xl font-black text-white">Connect Wallet</h2>
+                            <h2 className="text-2xl font-black text-virex-text-primary">Connect Wallet</h2>
                             <p className="text-virex-text-secondary text-sm">Choose your preferred Web3 wallet</p>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+                        <button onClick={onClose} className="p-2 hover:bg-virex-card-inner rounded-full border border-transparent hover:border-virex-border transition-colors">
                             <X size={20} className="text-virex-text-secondary" />
                         </button>
                     </div>
@@ -97,21 +97,21 @@ const WalletModal = ({ isOpen, onClose, onSelect }) => {
                             <button
                                 key={wallet.id}
                                 onClick={() => handleWalletSelect(wallet.id)}
-                                className="group flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-virex-primary/40 transition-all text-left"
+                                className="group flex items-center justify-between p-4 bg-virex-card-inner border border-virex-border rounded-2xl hover:bg-virex-border hover:border-virex-secondary/40 transition-all text-left"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 p-2 flex items-center justify-center group-hover:bg-virex-primary/10 transition-colors">
+                                    <div className="w-10 h-10 rounded-xl bg-virex-border p-2 flex items-center justify-center group-hover:bg-virex-secondary/10 transition-colors">
                                         <WalletIcon src={wallet.icon} alt={wallet.name} />
                                     </div>
                                     <div>
-                                        <span className="block text-white font-bold">{wallet.name}</span>
+                                        <span className="block text-virex-text-primary font-bold">{wallet.name}</span>
                                         {isInstalled(wallet.id) && (
                                             <span className="text-[10px] text-virex-success font-black uppercase tracking-wider">Installed</span>
                                         )}
                                     </div>
                                 </div>
-                                <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-virex-primary group-hover:bg-virex-primary/10 transition-all">
-                                    <div className="w-2 h-2 rounded-full bg-virex-text-secondary group-hover:bg-virex-primary" />
+                                <div className="w-8 h-8 rounded-full border border-virex-border flex items-center justify-center group-hover:border-virex-secondary group-hover:bg-virex-secondary/10 transition-all">
+                                    <div className="w-2 h-2 rounded-full bg-virex-text-secondary group-hover:bg-virex-secondary" />
                                 </div>
                             </button>
                         ))}
@@ -184,13 +184,13 @@ const Header = ({ provider, address, balance, eurcBalance, isConnected, onConnec
           }
         `}
       </style>
-      <div className="flex items-center justify-between glass-effect rounded-[22px] px-4 md:px-6 py-3 border border-white/[0.08] shadow-xl gap-2">
+      <div className="flex items-center justify-between glass-effect rounded-[22px] px-4 md:px-6 py-3 shadow-sm gap-2">
         
         {/* Animated Line & Live Block Info */}
         <div className="flex items-center gap-3 md:gap-4">
             <button 
                 onClick={onMenuClick} 
-                className="lg:hidden p-1.5 text-virex-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="lg:hidden p-1.5 text-virex-text-secondary hover:text-virex-text-primary hover:bg-virex-card-inner rounded-lg border border-transparent hover:border-virex-border transition-all"
             >
                 <Menu size={20} />
             </button>
@@ -217,18 +217,18 @@ const Header = ({ provider, address, balance, eurcBalance, isConnected, onConnec
 
         <div className="flex items-center gap-3 md:gap-6">
           {isConnected && (
-            <div className="hidden md:flex items-center gap-4 px-4 py-2 bg-white/[0.03] rounded-full border border-white/5">
+            <div className="hidden md:flex items-center gap-4 px-4 py-2 bg-virex-card-inner border border-virex-border rounded-full">
               <div className="flex flex-col items-end">
                 <span className="text-[10px] text-virex-text-secondary uppercase tracking-widest font-semibold">Balance</span>
-                <span className="text-xs font-black text-white">{balance} USDC</span>
-                <span className="text-xs font-black text-white">{eurcBalance} EURC</span>
+                <span className="text-xs font-black text-virex-text-primary">{balance} USDC</span>
+                <span className="text-xs font-black text-virex-text-primary">{eurcBalance} EURC</span>
               </div>
-              <div className="w-[1px] h-6 bg-white/10" />
+              <div className="w-[1px] h-6 bg-virex-border" />
               <div className="flex flex-col">
                 <span className="text-[10px] text-virex-text-secondary uppercase tracking-widest font-semibold text-right">Arc Testnet</span>
                 <div className="flex items-center gap-1.5 justify-end">
                   <div className="w-1.5 h-1.5 rounded-full bg-virex-success animate-pulse" />
-                  <span className="text-xs font-black text-white">Verified</span>
+                  <span className="text-xs font-black text-virex-text-primary">Verified</span>
                 </div>
               </div>
             </div>
@@ -244,14 +244,14 @@ const Header = ({ provider, address, balance, eurcBalance, isConnected, onConnec
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <div className="px-3 py-2 md:px-4 md:py-2.5 bg-white/5 border border-white/10 rounded-full flex items-center gap-2 group cursor-pointer hover:border-virex-primary transition-all">
-                <div className="w-5 h-5 rounded-full bg-virex-primary/20 flex items-center justify-center">
-                  <CheckCircle2 size={12} className="text-virex-primary" />
+              <div className="px-3 py-2 md:px-4 md:py-2.5 bg-virex-card-inner border border-virex-border rounded-full flex items-center gap-2 group cursor-pointer hover:border-virex-secondary transition-all">
+                <div className="w-5 h-5 rounded-full bg-virex-secondary/15 flex items-center justify-center">
+                  <CheckCircle2 size={12} className="text-virex-secondary" />
                 </div>
-                <span className="text-[11px] md:text-xs font-bold text-white">
+                <span className="text-[11px] md:text-xs font-bold text-virex-text-primary">
                   {address.slice(0, 4)}...{address.slice(-4)}
                 </span>
-                <ChevronDown size={14} className="text-virex-text-secondary group-hover:text-virex-primary transition-colors hidden sm:block" />
+                <ChevronDown size={14} className="text-virex-text-secondary group-hover:text-virex-secondary transition-colors hidden sm:block" />
               </div>
               
               <button 

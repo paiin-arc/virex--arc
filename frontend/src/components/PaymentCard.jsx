@@ -92,7 +92,7 @@ const PaymentCard = ({
                                 <Building2 size={14} />
                                 Arc Payments
                             </div>
-                            <h2 className="text-lg font-black text-white mt-1">Send & Receive USDC</h2>
+                            <h2 className="text-lg font-black text-virex-text-primary mt-1">Send & Receive USDC</h2>
                         </div>
                         <div className="hidden sm:flex items-center gap-1.5 text-virex-text-secondary">
                             <ShieldCheck size={14} className="text-virex-success" />
@@ -119,8 +119,8 @@ const PaymentCard = ({
                                 }}
                                 className={`flex items-center justify-center gap-2 py-3 rounded-virex-inner text-sm font-bold transition-all ${
                                     mode === id
-                                        ? 'bg-white/[0.08] text-white border border-virex-border'
-                                        : 'text-virex-text-secondary hover:text-white border border-transparent'
+                                        ? 'bg-virex-primary text-white border border-virex-border'
+                                        : 'text-virex-text-secondary hover:text-virex-text-primary border border-transparent'
                                 }`}
                             >
                                 <TabIcon size={16} />
@@ -136,7 +136,7 @@ const PaymentCard = ({
                         <div className="flex items-center justify-between p-4 virex-card-inner">
                             <div>
                                 <span className="block virex-label">Available</span>
-                                <span className="text-xl font-black text-white">{Number(paymentBalance || 0).toLocaleString(undefined, { maximumFractionDigits: 6 })} USDC</span>
+                                <span className="text-xl font-black text-virex-text-primary">{Number(paymentBalance || 0).toLocaleString(undefined, { maximumFractionDigits: 6 })} USDC</span>
                             </div>
                             <div className="text-right">
                                 <span className="block virex-label">Network</span>
@@ -201,7 +201,7 @@ const PaymentCard = ({
                             <div className="p-4 rounded-virex-inner bg-green-500/10 border border-green-500/20 flex flex-col sm:flex-row sm:items-center gap-3">
                                 <CheckCircle2 className="text-green-400 shrink-0" size={22} />
                                 <div className="min-w-0 flex-1">
-                                    <div className="text-sm font-black text-white">Payment settled</div>
+                                    <div className="text-sm font-black text-virex-text-primary">Payment settled</div>
                                     <div className="text-xs text-green-300/80 truncate font-mono">{receipt.txHash}</div>
                                 </div>
                                 <a
@@ -246,12 +246,12 @@ const PaymentCard = ({
                             <div className="p-4 virex-card-inner text-left">
                                 <span className="block virex-label mb-2">Receiving wallet</span>
                                 <div className="flex items-center gap-3">
-                                    <code className="text-sm text-white break-all flex-1 font-mono">{address || 'Connect a wallet to receive payments'}</code>
+                                    <code className="text-sm text-virex-text-primary break-all flex-1 font-mono">{address || 'Connect a wallet to receive payments'}</code>
                                     <button
                                         type="button"
                                         disabled={!address}
                                         onClick={() => copyText(address)}
-                                        className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-virex-border disabled:opacity-30 transition-colors"
+                                        className="p-2.5 rounded-xl bg-virex-card-inner hover:bg-virex-border border border-virex-border disabled:opacity-30 transition-colors"
                                         aria-label="Copy receiving address"
                                     >
                                         {copied ? <CheckCircle2 size={17} className="text-green-400" /> : <Copy size={17} />}

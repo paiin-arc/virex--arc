@@ -116,18 +116,22 @@ function App() {
           <main className="container mx-auto px-4">
             <Hero />
 
-            <PaymentCard
-              address={address}
-              isConnected={isConnected}
-              paymentBalance={paymentBalance}
-              estimate={sendEstimate}
-              error={sendError}
-              isPreparing={isPreparingPayment}
-              isSending={isSendingPayment}
-              onPrepare={preparePayment}
-              onConfirm={confirmPayment}
-              onReset={resetPayment}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 items-start max-w-6xl mx-auto mb-10">
+              <PaymentCard
+                address={address}
+                isConnected={isConnected}
+                paymentBalance={paymentBalance}
+                estimate={sendEstimate}
+                error={sendError}
+                isPreparing={isPreparingPayment}
+                isSending={isSendingPayment}
+                onPrepare={preparePayment}
+                onConfirm={confirmPayment}
+                onReset={resetPayment}
+              />
+              
+              <ActivityList history={history || []} />
+            </div>
             
             <TransferCard 
               isConnected={isConnected}
@@ -137,8 +141,6 @@ function App() {
               onQuoteFetch={fetchQuote}
               onTransfer={initiateBridge}
             />
-
-            <ActivityList history={history || []} />
           </main>
 
           <ProgressOverlay 

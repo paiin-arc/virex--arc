@@ -97,7 +97,7 @@ const TransferCard = ({
         <div className="flex items-center justify-between">
           <div>
             <span className="virex-label">Cross-Chain Transfer</span>
-            <h3 className="text-lg font-black text-white mt-0.5">Bridge USDC</h3>
+            <h3 className="text-lg font-black text-virex-text-primary mt-0.5">Bridge USDC</h3>
           </div>
           <div className="flex items-center gap-1.5 text-virex-text-secondary">
             <ShieldCheck size={14} className="text-virex-success" />
@@ -137,7 +137,7 @@ const TransferCard = ({
 
           <button 
               onClick={handleSwap}
-              className="w-10 h-10 rounded-full bg-virex-card border-2 border-virex-border flex items-center justify-center hover:border-virex-primary hover:bg-virex-primary/10 active:rotate-180 transition-all z-10 rotate-90 md:rotate-0 -my-2 md:my-0 shrink-0"
+              className="w-10 h-10 rounded-full bg-virex-card border-2 border-virex-border flex items-center justify-center hover:border-virex-primary hover:bg-virex-primary/10 active:rotate-180 transition-all z-10 rotate-90 md:rotate-0 -my-2 md:my-0 shrink-0 border-4 border-virex-card"
           >
             <ArrowLeftRight size={16} className="text-virex-text-secondary" />
           </button>
@@ -174,7 +174,7 @@ const TransferCard = ({
           <div className="flex items-center justify-between mb-2">
             <span className="virex-label">Amount</span>
             <span className="text-xs text-virex-text-secondary font-medium">
-              Available: <b className="text-white">{currentBalance} USDC</b>
+              Available: <b className="text-virex-text-primary">{currentBalance} USDC</b>
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -183,7 +183,7 @@ const TransferCard = ({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="flex-1 bg-transparent text-3xl md:text-4xl font-black text-white outline-none placeholder:text-white/10 min-w-0"
+              className="flex-1 bg-transparent text-3xl md:text-4xl font-black text-virex-text-primary outline-none placeholder:text-virex-text-secondary/20 min-w-0"
             />
             <div className="flex items-center gap-2 px-3.5 py-2 bg-white/[0.06] border border-virex-border rounded-virex-pill shrink-0">
               <SafeIcon src={tokenIcons.usdc} alt="USDC" className="w-5 h-5 object-contain rounded-full" fallbackIcon={HelpCircle} />

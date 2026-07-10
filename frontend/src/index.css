@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-virex-bg: #0a0e19;
-  --color-virex-card: #111827;
-  --color-virex-card-inner: #0d1220;
-  --color-virex-border: rgba(255, 255, 255, 0.08);
-  --color-virex-border-hover: rgba(255, 255, 255, 0.16);
-  --color-virex-primary: #4F46E5;
-  --color-virex-secondary: #06B6D4;
-  --color-virex-success: #22C55E;
-  --color-virex-text-primary: #FFFFFF;
-  --color-virex-text-secondary: #9CA3AF;
+  --color-virex-bg: #FFFFFF;
+  --color-virex-card: #FFFFFF;
+  --color-virex-card-inner: #F8FAFC;
+  --color-virex-border: #E2E8F0;
+  --color-virex-border-hover: #CBD5E1;
+  --color-virex-primary: #0F172A;
+  --color-virex-secondary: #0EA5E9;
+  --color-virex-success: #10B981;
+  --color-virex-text-primary: #0F172A;
+  --color-virex-text-secondary: #64748B;
   
-  --background-image-accent-gradient: linear-gradient(135deg, #4F46E5, #06B6D4);
+  --background-image-accent-gradient: linear-gradient(135deg, #0F172A, #1F2937);
   
   --radius-virex: 24px;
   --radius-virex-inner: 16px;
@@ -30,15 +30,14 @@
 
 @layer components {
   .glass-effect {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-virex-border;
+    @apply bg-white border border-virex-border;
   }
   
   .virex-card {
     @apply bg-virex-card border border-virex-border rounded-virex;
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 4px 24px rgba(0, 0, 0, 0.4),
-      0 1px 2px rgba(0, 0, 0, 0.3);
+      0 4px 20px rgba(15, 23, 42, 0.04),
+      0 1px 2px rgba(15, 23, 42, 0.02);
   }
 
   .virex-card-inner {
@@ -50,21 +49,21 @@
            bg-accent-gradient
            hover:brightness-110 active:scale-[0.98] transition-all
            min-h-[52px] flex items-center justify-center gap-2
-           shadow-[0_4px_16px_rgba(79,70,229,0.3)];
+           shadow-[0_4px_16px_rgba(15,23,42,0.15)];
   }
 
   .virex-button-outline {
     @apply w-full py-3.5 px-6 rounded-virex-pill font-bold text-sm
-           bg-transparent border-2 border-virex-border text-white
-           hover:bg-white/[0.05] hover:border-virex-border-hover
+           bg-transparent border border-virex-border text-virex-text-primary
+           hover:bg-virex-card-inner hover:border-virex-border-hover
            active:scale-[0.98] transition-all
            min-h-[48px] flex items-center justify-center gap-2;
   }
 
   .virex-input {
     @apply w-full bg-virex-card-inner border border-virex-border rounded-virex-inner px-4 py-3.5 
-           text-white outline-none focus:border-virex-primary/60 transition-colors
-           min-h-[48px] placeholder:text-white/20;
+           text-virex-text-primary outline-none focus:border-virex-secondary transition-colors
+           min-h-[48px] placeholder:text-virex-text-secondary/40;
   }
 
   .virex-label {
@@ -74,7 +73,7 @@
   .virex-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-virex-pill 
            text-[10px] font-black uppercase tracking-widest
-           border backdrop-blur-sm;
+           border border-virex-border bg-virex-card-inner text-virex-text-primary;
   }
 
   .virex-stat-cell {
