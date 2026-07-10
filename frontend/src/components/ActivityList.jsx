@@ -1,6 +1,6 @@
 import React from 'react';
-import { ExternalLink, CheckCircle2, Clock, XCircle, ArrowRightLeft, Route, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ExternalLink, CheckCircle2, Clock, XCircle, ArrowRightLeft, Route, AlertCircle, Send } from 'lucide-react';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 
 const ActivityList = ({ history }) => {
   if (!history || !Array.isArray(history) || history.length === 0) return null;
@@ -25,12 +25,12 @@ const ActivityList = ({ history }) => {
         <AnimatePresence initial={false}>
           {history.map((tx, i) => {
             const isSwap = tx.type === 'swap';
+            const isSend = tx.type === 'send';
             const isFailed = tx.status === 'failed';
             const isPending = tx.status === 'pending' || tx.status === 'depositing' || tx.status === 'initializing';
-            const isCompleted = tx.status === 'completed';
 
             return (
-              <motion.div 
+              <Motion.div
                 layout
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -67,7 +67,7 @@ const ActivityList = ({ history }) => {
                       <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                               <span className="text-xs font-black px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-gray-300 uppercase tracking-widest">
-                                  {isSwap ? 'Swap' : 'Bridge'}
+                                  {isSwap ? 'Swap' : isSend ? 'Payment' : 'Bridge'}
                               </span>
                               
                               {/* Metadata Title (e.g. 100 USDC -> 92 EURC) */}
@@ -77,6 +77,14 @@ const ActivityList = ({ history }) => {
                                           {tx.amountIn} {tx.direction === 'USDC_TO_EURC' ? 'USDC' : 'EURC'}
                                           <ArrowRightLeft size={14} className="text-virex-text-secondary" />
                                           {tx.amountOut ? `${tx.amountOut} ${tx.direction === 'USDC_TO_EURC' ? 'EURC' : 'USDC'}` : '?'}
+                                      </>
+                                  ) : isSend ? (
+                                      <>
+                                          {tx.amount || '0'} USDC
+                                          <Send size={14} className="text-virex-text-secondary" />
+                                          <span className="font-mono text-xs">
+                                            {tx.recipient ? `${tx.recipient.slice(0, 6)}...${tx.recipient.slice(-4)}` : 'recipient'}
+                                          </span>
                                       </>
                                   ) : (
                                       <>
@@ -97,10 +105,17 @@ const ActivityList = ({ history }) => {
                                   <span>{tx.error || 'Transaction failed'}</span>
                               </div>
                           ) : (
-                              <span className="text-[10px] font-medium text-virex-text-secondary uppercase tracking-wider">
-                                  {new Date(tx.timestamp).toLocaleString()} 
-                                  {tx.txHash && ` • TX: ${tx.txHash.slice(0,6)}...${tx.txHash.slice(-4)}`}
-                              </span>
+                              <>
+                                  {isSend && tx.reference && (
+                                      <span className="text-[11px] text-gray-400 truncate max-w-sm">
+                                          Ref: {tx.reference}
+                                      </span>
+                                  )}
+                                  <span className="text-[10px] font-medium text-virex-text-secondary uppercase tracking-wider">
+                                      {new Date(tx.timestamp).toLocaleString()}
+                                      {tx.txHash && ` • TX: ${tx.txHash.slice(0,6)}...${tx.txHash.slice(-4)}`}
+                                  </span>
+                              </>
                           )}
                       </div>
                   </div>
@@ -131,7 +146,7 @@ const ActivityList = ({ history }) => {
                       )}
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             );
           })}
         </AnimatePresence>

@@ -5,9 +5,11 @@ import TransferCard from './components/TransferCard';
 import ActivityList from './components/ActivityList';
 import ProgressOverlay from './components/ProgressOverlay';
 import Sidebar from './components/Sidebar';
+import PaymentCard from './components/PaymentCard';
 import { useWallet } from './hooks/useWallet';
 import { useBridge } from './hooks/useBridge';
 import { useActivity } from './hooks/useActivity';
+import { useSend } from './hooks/useSend';
 import { AlertCircle } from 'lucide-react';
 
 class ErrorBoundary extends React.Component {
@@ -57,6 +59,23 @@ function App() {
     loading 
   } = useBridge(signer, address, { ensureNetwork, provider, addActivity });
 
+  const {
+    estimate: sendEstimate,
+    paymentBalance,
+    isPreparing: isPreparingPayment,
+    isSending: isSendingPayment,
+    error: sendError,
+    preparePayment,
+    confirmPayment,
+    resetPayment
+  } = useSend({
+    address,
+    provider,
+    ensureNetwork,
+    addActivity,
+    refreshBalance
+  });
+
   return (
     <ErrorBoundary>
         <div className="min-h-screen pb-20 overflow-x-hidden flex">
@@ -96,6 +115,19 @@ function App() {
 
           <main className="container mx-auto px-4">
             <Hero />
+
+            <PaymentCard
+              address={address}
+              isConnected={isConnected}
+              paymentBalance={paymentBalance}
+              estimate={sendEstimate}
+              error={sendError}
+              isPreparing={isPreparingPayment}
+              isSending={isSendingPayment}
+              onPrepare={preparePayment}
+              onConfirm={confirmPayment}
+              onReset={resetPayment}
+            />
             
             <TransferCard 
               isConnected={isConnected}
